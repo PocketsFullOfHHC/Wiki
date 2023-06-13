@@ -1,11 +1,16 @@
-package com.hhc.wiki;
+package com.hhc.wiki.config;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.core.env.Environment;
 
+// 指定该wiki启动类扫描的包的范围：如不指定，原则上只能访问到该类所在包(config包)下面的子包，就不会访问到controller
+// 加上扫描包的注解后指定范围(可以写的通用一点：com.hhc，但不要太通用写成com，这样会识别到第三方的jar)即可
+// 可能会引入多个包，还可能会扫描jar包，因此用列表将指定范围包起来
+@ComponentScan({"com.hhc.wiki"})
 @SpringBootApplication
 public class WikiApplication {
 
