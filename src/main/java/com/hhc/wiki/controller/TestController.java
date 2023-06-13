@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 // 用来返回页面
 //@Controller
-public class TextController {
+public class TestController {
 
     // 变量需要用${}包住
     // 启动时，SpringBoot就会扫描所有的类，扫描到类里面有Vaule注解时，就会找里面text.hello这个配置项，若没有这个配置项，则会返回默认配置值TEST(优先读配置文件)
