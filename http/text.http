@@ -1,0 +1,24 @@
+# 一个http文件是可以写多个测试脚本的
+GET http://localhost:8880/hello
+# 函数返回的是字符串，因此这里不需要再转化为json了
+# Accept: application/json
+
+# 结果验证，验证返回的响应结果，类似于单元测试，第一个参数是测试的名字，第二个参数是方法，log函数为写日志
+> {%
+client.test("test-hello", function() {
+  client.log("测试/hello接口");
+  client.log(response.body);
+  client.log(JSON.stringify(response.body)); // 虽然idea没有提示JSON，但是可以用
+  client.assert(response.status === 200, "返回码不是200");
+  client.assert(response.body === "Hello World!", "结果验证失败");
+});
+%}
+###
+
+POST http://localhost:8880/hello/post
+Content-Type: application/x-www-form-urlencoded
+
+# 参数名字和Textcontroller里面的helloPost参数一致，Spring会自动映射
+name=Text
+
+###
