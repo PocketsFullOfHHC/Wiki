@@ -34,7 +34,7 @@
 
 ## 第二天工作：
 
-9. 集成持久层框架Mybatis：
+9. **集成持久层框架Mybatis**：
     * 集成Mybatis
     * 测试Mybatis：开发/test/list接口，查询test表所有数据
         * 流程：

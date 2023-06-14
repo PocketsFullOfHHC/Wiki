@@ -12,6 +12,8 @@ import java.util.List;
 @Service
 public class TestService {
     // 添加注解将testMapper注入进来：@Resource是jdk自带，@Autowired是springboot的，二者都可以
+    // @resource注解就是把一个bean注入到当前的类中，可以不必通过配置文件或者导包的方式注入就可以使用该bean
+    // Spring Bean是被实例的，组装的及被Spring 容器管理的Java对象
     @Resource
     // @Autowired
     // 将TestMapper声明
