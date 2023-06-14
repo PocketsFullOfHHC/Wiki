@@ -1,5 +1,6 @@
 package com.hhc.wiki.config;
 
+import org.mybatis.spring.annotation.MapperScan;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.SpringApplication;
@@ -12,6 +13,8 @@ import org.springframework.core.env.Environment;
 // 可能会引入多个包，还可能会扫描jar包，因此用列表将指定范围包起来
 @ComponentScan({"com.hhc.wiki"})
 @SpringBootApplication
+// 让项目知道TestMapper就是持久层
+@MapperScan("com.hhc.wiki.mapper")
 public class WikiApplication {
 
     private static final Logger LOG = LoggerFactory.getLogger(WikiApplication.class);

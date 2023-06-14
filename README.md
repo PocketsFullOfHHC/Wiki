@@ -31,3 +31,14 @@
         * config/bootstrap.properties/yml
     * 自定义配置项的使用：用@Value来读。
 8. **修改错误命名的test.http和TestController**
+
+## 第二天工作：
+
+9. 集成持久层框架Mybatis：
+    * 集成Mybatis
+    * 测试Mybatis：开发/test/list接口，查询test表所有数据
+        * 流程：
+        1. 程序的入口在TestController
+        2. 我们在test.http中访问了/test/list，相当于访问了TestController中的list()方法
+        3. 该方法返回TestService.list()，而这个方法会返回TestMapper.list()
+        4. 而TestMapper会映射到对应的TestMapper.xml并根据方法名和id的对应关系选择对应的sql语句
