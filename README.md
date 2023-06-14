@@ -34,11 +34,26 @@
 
 ## 第二天工作：
 
-9. **集成持久层框架Mybatis**：
-    * 集成Mybatis
+9. **集成热部署**：
+    * 引入依赖包
+    * 开启静态自动编译
+    * 开启动态自动编译
+10. **本地数据库准备**：
+    * 在root@localhost(主链接)创建数据库wiki
+    * 创建专用账户Wiki@localhost并赋予其wiki的访问权限
+    * 新建链接wiki@locallhost
+11. **IDEA数据库插件配置**：
+    * 新增数据源，指定数据库的专用用户名和访问密码及数据库名称(配置时区)
+    * 建表测试：all.sql
+12. **集成持久层框架Mybatis**：
+    * 集成Mybatis:
+        * 引入依赖
+        * 配置数据源(同样需要配置时区)
     * 测试Mybatis：开发/test/list接口，查询test表所有数据
         * 流程：
         1. 程序的入口在TestController
         2. 我们在test.http中访问了/test/list，相当于访问了TestController中的list()方法
         3. 该方法返回TestService.list()，而这个方法会返回TestMapper.list()
         4. 而TestMapper会映射到对应的TestMapper.xml并根据方法名和id的对应关系选择对应的sql语句
+13. **将数据库更改为wikidev**
+    
