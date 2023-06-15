@@ -49,8 +49,7 @@
     * 集成Mybatis:
         * 引入依赖
         * 配置数据源(同样需要配置时区)
-    * 测试Mybatis：开发/test/list接口，查询test表所有数据
-        * 流程：
+    * 测试Mybatis：开发/test/list接口，查询test表所有数据。流程：
         1. 程序的入口在TestController
         2. 我们在test.http中访问了/test/list，相当于访问了TestController中的list()方法
         3. 该方法返回TestService.list()，而这个方法会返回TestMapper.list()

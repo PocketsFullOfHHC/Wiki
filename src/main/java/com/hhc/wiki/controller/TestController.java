@@ -12,7 +12,7 @@ import java.util.List;
 
 // 返回字符串
 @RestController
-// 用来返回页面
+// 用来返回页面(内容实例)
 //@Controller
 public class TestController {
 

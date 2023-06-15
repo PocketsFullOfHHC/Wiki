@@ -1,0 +1,4 @@
+# 测试Mybatis持久层
+GET http://localhost:8880/demo/list
+
+###
