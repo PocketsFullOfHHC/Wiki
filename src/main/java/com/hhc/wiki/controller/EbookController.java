@@ -21,10 +21,10 @@ public class EbookController {
     private EbookService ebookService;
 
     @GetMapping("/list")
-    public CommonResp list() {
+    public CommonResp list(String name) {
         // 创建一个返回值通用类的对象，因为查询表返回的是List<Ebook>
         CommonResp<List<Ebook>> resp = new CommonResp<>();
-        List<Ebook> list = ebookService.list();
+        List<Ebook> list = ebookService.list(name);
         // success默认为true，message为null，因此都无需设置
         resp.setContent(list);
         return resp;

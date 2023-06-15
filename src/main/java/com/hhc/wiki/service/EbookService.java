@@ -1,6 +1,7 @@
 package com.hhc.wiki.service;
 
 import com.hhc.wiki.domain.Ebook;
+import com.hhc.wiki.domain.EbookExample;
 import com.hhc.wiki.mapper.EbookMapper;
 import org.springframework.stereotype.Service;
 
@@ -18,8 +19,14 @@ public class EbookService {
     // @Autowired
     // 将EbookMapper声明
     private EbookMapper ebookMapper;
-    public List<Ebook> list(){
+    public List<Ebook> list(String name){
+        // 只要使用到example，前面的两句话都是固定的
+        EbookExample ebookExample = new EbookExample();
+        // criteria相当于where语句，用来添加条件
+        EbookExample.Criteria criteria = ebookExample.createCriteria();
+        // 使用模糊查询(左右匹配)
+        criteria.andNameLike("%"+ name +"%");
         // Example相当于sql查询中的where语句，用于select的添加条件
-        return ebookMapper.selectByExample(null);
+        return ebookMapper.selectByExample(ebookExample);
     }
 }
