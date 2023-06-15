@@ -40,8 +40,10 @@
         <javaClientGenerator targetProject="src\main\java"
                              targetPackage="com.hhc.wiki.mapper"
                              type="XMLMAPPER"/>
-
-        <table tableName="demo" domainObjectName="Demo"/>
+        <!-- 生成过一遍的mapper就不需要再生成一次了 -->
+        <!-- <table tableName="demo" domainObjectName="Demo"/> -->
+        <!-- 生成domain的名称可以省略，仍然可以生成大写的名字 -->
+        <table tableName= "ebook"/>
     </context>
 </generatorConfiguration>
 
