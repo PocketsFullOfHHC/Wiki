@@ -34,18 +34,18 @@
 
 ## 第二天工作：
 
-9. **集成热部署**：
+1. **集成热部署**：
     * 引入依赖包
     * 开启静态自动编译
     * 开启动态自动编译
-10. **本地数据库准备**：
+2. **本地数据库准备**：
     * 在root@localhost(主链接)创建数据库wiki
     * 创建专用账户Wiki@localhost并赋予其wiki的访问权限
     * 新建链接wiki@locallhost
-11. **IDEA数据库插件配置**：
+3. **IDEA数据库插件配置**：
     * 新增数据源，指定数据库的专用用户名和访问密码及数据库名称(配置时区)
     * 建表测试：all.sql
-12. **集成持久层框架Mybatis**：
+4. **集成持久层框架Mybatis**：
     * 集成Mybatis:
         * 引入依赖
         * 配置数据源(同样需要配置时区)
@@ -54,5 +54,36 @@
         2. 我们在test.http中访问了/test/list，相当于访问了TestController中的list()方法
         3. 该方法返回TestService.list()，而这个方法会返回TestMapper.list()
         4. 而TestMapper会映射到对应的TestMapper.xml并根据方法名和id的对应关系选择对应的sql语句
-13. **将数据库更改为wikidev**
-    
+5. **将数据库更改为wikidev**
+
+## 第三天工作：
+1. **集成mybatis generator官方代码生成器**：
+    * 集成步骤：
+        * pom.xml中增加插件依赖
+        * 增加配置文件generator-config.xml
+        * 增加执行命令，生成持久层代码
+    * 测试demo表的查询功能：
+        * 生成demo表all.sql
+        * 添加DemoController.java，并用@RequestMapping注解提取公共路径
+        * 添加DemoService.java使用持久层
+        * 添加demo.http测试查询功能
+2. **开发电子书列表查询接**：
+    * 添加电子书表ebook
+    * 使用代码生成器生成持久层代码
+    * 添加EbookController.java和EbookService.java并添加ebook.http进行测试
+    * 增加通用返回类CommonResp(包括success，message，context)，以后所有端口的返回值类型均为CommonResp
+3. **测试电子书模糊查询**：
+4. **封装请求参数和返回参数**：
+    * 建立一个专门接收返回值的实体类EbookResp.java
+    * 建立一个专门用来传参的实体类EbookReq.java
+    * BeanUtils工具类的使用：复制对象
+5. **制作工具类CopyUtil封装BeanUtils**：
+    * 单体对象复制
+    * 列表复制
+6. **创建Vue CLI项目**：
+    * 安装Vue CLI
+    * 创建web应用
+    * 启动web应用
+7. **集成Ant Design Vue**：
+    * 集成Ant Design Vue
+    * 用Ant Design Vue添加danger按钮
