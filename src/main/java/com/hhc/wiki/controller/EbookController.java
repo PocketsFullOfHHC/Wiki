@@ -1,7 +1,8 @@
 package com.hhc.wiki.controller;
 
-import com.hhc.wiki.domain.Ebook;
+import com.hhc.wiki.req.EbookReq;
 import com.hhc.wiki.resp.CommonResp;
+import com.hhc.wiki.resp.EbookResp;
 import com.hhc.wiki.service.EbookService;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -21,10 +22,10 @@ public class EbookController {
     private EbookService ebookService;
 
     @GetMapping("/list")
-    public CommonResp list(String name) {
+    public CommonResp list(EbookReq req) {
         // 创建一个返回值通用类的对象，因为查询表返回的是List<Ebook>
-        CommonResp<List<Ebook>> resp = new CommonResp<>();
-        List<Ebook> list = ebookService.list(name);
+        CommonResp<List<EbookResp>> resp = new CommonResp<>();
+        List<EbookResp> list = ebookService.list(req);
         // success默认为true，message为null，因此都无需设置
         resp.setContent(list);
         return resp;
