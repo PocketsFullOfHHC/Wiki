@@ -3,7 +3,6 @@
     <a-layout-sider width="200" style="background: #fff">
       <a-menu
               mode="inline"
-              v-model:selectedKeys="selectedKeys2"
               v-model:openKeys="openKeys"
               :style="{ height: '100%', borderRight: 0 }"
       >
@@ -46,8 +45,17 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue';
+import axios from 'axios';
 
 export default defineComponent({
   name: 'HomeView',
+  // vue3新增的初始化方法，是这个组件加载完成后初始会去执行的方法
+  setup(){
+    console.log("setup");
+    // 返回值为响应内容，用response接收
+    axios.get("http://localhost:8880/ebook/list?name=Spring").then((response) => {
+      console.log(response);
+    })
+  }
 });
 </script>
