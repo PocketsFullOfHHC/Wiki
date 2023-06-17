@@ -87,3 +87,18 @@
 7. **集成Ant Design Vue**：
     * 集成Ant Design Vue
     * 用Ant Design Vue添加danger按钮
+    
+## 第五天工作：
+1. **网站首页布局开发**：
+    * 加入Ant Design Vue布局(解决bug：下载新版组件库，css文件名为reset.css)
+    * 首页路由开发：Vue3 router默认加载views文件夹下全部vue文件，views中修改HomeView.vue
+    * eslint关闭vue/no-unused-components校验
+2. **制作the-header和the-footer组件**：
+    * 将header和footer提取成组件
+    * 在Vue.app中注册组件并使用
+3. **去掉HelloWord组件相关代码**
+4. **集成axios**
+5. **使用axios调用后端接口/ebook/list**：
+    * 在HomeView路由组件中使用setup初始化函数axios访问地址并接受响应，打印在控制台上
+    * 解决跨域报错问题
+    * 解决警告问题
