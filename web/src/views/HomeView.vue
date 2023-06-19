@@ -39,7 +39,7 @@
             :style="{ background: '#fff', padding: '24px', margin: 0, minHeight: '280px' }"
     >
       <!-- :grid = "{gutter: 20, column: 3}"：每行三列，列与列之间间隔为20px -->
-      <a-list item-layout="vertical" size="large" :grid = "{gutter: 20, column: 3}" :pagination="pagination" :data-source="ebooks">
+      <a-list item-layout="vertical" size="large" :grid = "{gutter: 20, column: 3}"  :data-source="ebooks">
         <template #renderItem="{ item }">
           <a-list-item key="item.name">
             <template #actions>
@@ -80,7 +80,7 @@ export default defineComponent({
     onMounted(() => {
       console.log("onMounted");
       // 返回值为响应内容，用response接收
-      axios.get("http://localhost:8880/ebook/list?name=Spring").then((response) => {
+      axios.get("http://localhost:8880/ebook/list").then((response) => {
         const data = response.data;
         // ref的对应赋值方法
         ebooks.value = data.content;
@@ -88,12 +88,6 @@ export default defineComponent({
         console.log(response);
       })
     });
-    const pagination = {
-      onChange: (page: number) => {
-        console.log(page);
-      },
-      pageSize: 3,
-    };
     const actions: Record<string, string>[] = [
       { type: 'StarOutlined', text: '156' },
       { type: 'LikeOutlined', text: '156' },
@@ -104,9 +98,20 @@ export default defineComponent({
       ebooks,
       // 将其转化为响应式数据
       ebooks2: toRef(ebooks1, "books"),
-      pagination,
       actions,
     }
   }
 });
 </script>
+
+<!-- 用f12找到后可以在网页中调整，调整正确后再复制到这里 -->
+<!-- scoped表示增加的页面只在当前这个HomeView中生效 -->
+<style scoped>
+  .ant-avatar {
+    width: 50px;
+    height: 50px;
+    line-height: 50px;
+    border-radius: 8%;
+    margin: 5px 0;
+  }
+</style>

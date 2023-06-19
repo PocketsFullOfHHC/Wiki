@@ -7,6 +7,7 @@ import com.hhc.wiki.req.EbookReq;
 import com.hhc.wiki.resp.EbookResp;
 import com.hhc.wiki.util.CopyUtil;
 import org.springframework.stereotype.Service;
+import org.springframework.util.ObjectUtils;
 
 import javax.annotation.Resource;
 import java.util.List;
@@ -27,10 +28,16 @@ public class EbookService {
         EbookExample ebookExample = new EbookExample();
         // criteria相当于where语句，用来添加条件
         EbookExample.Criteria criteria = ebookExample.createCriteria();
-        // 使用模糊查询(左右匹配)
-        criteria.andNameLike("%"+ req.getName() +"%");
+        // 动态sql，否则就写死了，需要判断到底有没有name这个参数传进来，如果有就按照name去找，如果没有就不加这个条件
+        // 用spring的工具类方法isEmpty()判断是否为空，之前是在StringUtils里，目前已废弃，挪到了ObjectUtils
+        if(!ObjectUtils.isEmpty(req.getName())){
+            // 使用模糊查询(左右匹配)
+            criteria.andNameLike("%"+ req.getName() +"%");
+        }
         // Example相当于sql查询中的where语句，用于select的添加条件
         List<Ebook> ebookList = ebookMapper.selectByExample(ebookExample);
+
+
 
         // 持久层返回了List<Ebook>类的ebookList，此时需要转化为List<EbookResp>，先创建一个空的List<EbookResp>
 //        List<EbookResp> respList = new ArrayList<>();
