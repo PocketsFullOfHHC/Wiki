@@ -76,7 +76,6 @@
 
 <script lang="ts">
 import { defineComponent,onMounted,ref,reactive,toRef } from 'vue';
-import { StarOutlined, LikeOutlined, MessageOutlined } from '@ant-design/icons-vue';
 import axios from 'axios';
 
 // 需要加上any：因为typescript是强类型，定义变量必须指定类型，js是弱类型，同一个变量可以放任何东西，因此ts往里面放别的东西会报错
@@ -98,12 +97,7 @@ for (let i = 0; i < 23; i++) {
 
 export default defineComponent({
   name: 'HomeView',
-  // 注册图标组件
-  components: {
-    StarOutlined,
-    LikeOutlined,
-    MessageOutlined,
-  },
+
   // vue3新增的初始化方法，是这个组件加载完成后初始会去执行的方法
   // vue3将vue2中的data，method，以及mounted等生命周期函数打包成setup
   setup(){
