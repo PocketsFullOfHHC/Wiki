@@ -38,21 +38,72 @@
     <a-layout-content
             :style="{ background: '#fff', padding: '24px', margin: 0, minHeight: '280px' }"
     >
-      <pre>
-        <!-- 直接打印会变成一个json字符串(由数组包含)，用pre标签，表示预定义格式文本。在该元素中的文本通常按照原文件中的编排，以等宽字体的形式展现出来，文本中的空白符（比如空格和换行符）都会显示出来 -->
-{{ebooks}}
-{{ebooks2}}
-      </pre>
+      <a-list item-layout="vertical" size="large" :pagination="pagination" :data-source="listData">
+        <template #footer>
+          <div>
+            <b>ant design vue</b>
+            footer part
+          </div>
+        </template>
+        <template #renderItem="{ item }">
+          <a-list-item key="item.title">
+            <template #actions>
+          <span v-for="{ type, text } in actions" :key="type">
+            <component :is="type" style="margin-right: 8px" />
+            {{ text }}
+          </span>
+            </template>
+            <template #extra>
+              <img
+                      width="272"
+                      alt="logo"
+                      src="https://gw.alipayobjects.com/zos/rmsportal/mqaQswcyDLcXyDKnZfES.png"
+              />
+            </template>
+            <a-list-item-meta :description="item.description">
+              <template #title>
+                <a :href="item.href">{{ item.title }}</a>
+              </template>
+              <template #avatar><a-avatar :src="item.avatar" /></template>
+            </a-list-item-meta>
+            {{ item.content }}
+          </a-list-item>
+        </template>
+      </a-list>
     </a-layout-content>
   </a-layout>
 </template>
 
 <script lang="ts">
 import { defineComponent,onMounted,ref,reactive,toRef } from 'vue';
+import { StarOutlined, LikeOutlined, MessageOutlined } from '@ant-design/icons-vue';
 import axios from 'axios';
+
+// 需要加上any：因为typescript是强类型，定义变量必须指定类型，js是弱类型，同一个变量可以放任何东西，因此ts往里面放别的东西会报错
+// const listData: String就只能放字符串了，这里用any又把他变成了弱类型，但是会报警告，去eslint中配置警告
+// const listData: any = [];
+const listData: Record<string, string>[] = [];
+
+for (let i = 0; i < 23; i++) {
+  listData.push({
+    href: 'https://www.antdv.com/',
+    title: `ant design vue part ${i}`,
+    avatar: 'https://joeschmoe.io/api/v1/random',
+    description:
+            'Ant Design, a design language for background applications, is refined by Ant UED Team.',
+    content:
+            'We supply a series of design principles, practical patterns and high quality design resources (Sketch and Axure), to help people create their product prototypes beautifully and efficiently.',
+  });
+}
 
 export default defineComponent({
   name: 'HomeView',
+  // 注册图标组件
+  components: {
+    StarOutlined,
+    LikeOutlined,
+    MessageOutlined,
+  },
   // vue3新增的初始化方法，是这个组件加载完成后初始会去执行的方法
   // vue3将vue2中的data，method，以及mounted等生命周期函数打包成setup
   setup(){
@@ -73,11 +124,25 @@ export default defineComponent({
         console.log(response);
       })
     });
+    const pagination = {
+      onChange: (page: number) => {
+        console.log(page);
+      },
+      pageSize: 3,
+    };
+    const actions: Record<string, string>[] = [
+      { type: 'StarOutlined', text: '156' },
+      { type: 'LikeOutlined', text: '156' },
+      { type: 'MessageOutlined', text: '2' },
+    ];
     return{
       // 前端需要拿到这个数据，因此要在setup后返回这个值，类似data
       ebooks,
       // 将其转化为响应式数据
-      ebooks2: toRef(ebooks1, "books")
+      ebooks2: toRef(ebooks1, "books"),
+      listData,
+      pagination,
+      actions,
     }
   }
 });
