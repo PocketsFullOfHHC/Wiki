@@ -8,7 +8,7 @@ import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 
-// 增加Component就会让SpringBoot去扫描
+// 增加Component注解就会让SpringBoot去扫描
 @Component
 public class LogFilter implements Filter {
 
