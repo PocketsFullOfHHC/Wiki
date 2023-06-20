@@ -80,6 +80,7 @@ export default defineComponent({
     onMounted(() => {
       console.log("onMounted");
       // 返回值为响应内容，用response接收
+      // 这里可以配置多环境配置：写在.env.dev和.env.prod中并在package.json中修改命令
       axios.get("http://localhost:8880/ebook/list").then((response) => {
         const data = response.data;
         // ref的对应赋值方法
