@@ -78,10 +78,10 @@ export default defineComponent({
     const ebooks1 = reactive({books:[]});
     // 一般把界面的的初始化逻辑都写到onMounted中，不建议直接写到setup()中
     onMounted(() => {
-      console.log("onMounted");
+      console.log("onMounted111");
       // 返回值为响应内容，用response接收
       // 这里可以配置多环境配置：写在.env.dev和.env.prod中并在package.json中修改命令
-      axios.get("http://localhost:8880/ebook/list").then((response) => {
+      axios.get(process.env.VUE_APP_SERVER + "/ebook/list").then((response) => {
         const data = response.data;
         // ref的对应赋值方法
         ebooks.value = data.content;
