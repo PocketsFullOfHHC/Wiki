@@ -19,7 +19,7 @@ POST http://localhost:8880/hello/post
 Content-Type: application/x-www-form-urlencoded
 
 # 参数名字和Textcontroller里面的helloPost参数一致，Spring会自动映射
-name=Text
+name=Test
 
 ###
 
