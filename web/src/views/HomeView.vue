@@ -71,14 +71,12 @@ export default defineComponent({
   // vue3新增的初始化方法，是这个组件加载完成后初始会去执行的方法
   // vue3将vue2中的data，method，以及mounted等生命周期函数打包成setup
   setup(){
-    console.log("setup");
     // vue3新增ref为定义响应式数据，即在js中动态修改这里面的值，需要实时反馈到界面上
     const ebooks = ref();
     // reactive中需要放置一个对象，在该对象中添加属性books属性来放response返回值并将该对象赋值给ebooks
     const ebooks1 = reactive({books:[]});
     // 一般把界面的的初始化逻辑都写到onMounted中，不建议直接写到setup()中
     onMounted(() => {
-      console.log("onMounted");
       // 返回值为响应内容，用response接收
       // 这里可以配置多环境配置：写在.env.dev和.env.prod中并在package.json中修改命令
       axios.get("/ebook/list").then((response) => {
@@ -86,7 +84,6 @@ export default defineComponent({
         // ref的对应赋值方法
         ebooks.value = data.content;
         ebooks1.books = data.content;
-        console.log(response);
       })
     });
     const actions: Record<string, string>[] = [
