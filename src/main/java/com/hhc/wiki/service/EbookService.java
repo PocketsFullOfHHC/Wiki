@@ -1,11 +1,15 @@
 package com.hhc.wiki.service;
 
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import com.hhc.wiki.domain.Ebook;
 import com.hhc.wiki.domain.EbookExample;
 import com.hhc.wiki.mapper.EbookMapper;
 import com.hhc.wiki.req.EbookReq;
 import com.hhc.wiki.resp.EbookResp;
 import com.hhc.wiki.util.CopyUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
 
@@ -16,6 +20,9 @@ import java.util.List;
 // 使用Service注解，将这个Service交给Spring管理了，这样Spring才会扫描到这个类
 @Service
 public class EbookService {
+    // 打印日志
+    private static final Logger LOG = LoggerFactory.getLogger(EbookService.class);
+
     // 添加注解将ebookMapper注入进来：@Resource是jdk自带，@Autowired是springboot的，二者都可以
     // @resource注解就是把一个bean注入到当前的类中，可以不必通过配置文件或者导包的方式注入就可以使用该bean
     // Spring Bean是被实例的，组装的及被Spring 容器管理的Java对象
@@ -34,9 +41,17 @@ public class EbookService {
             // 使用模糊查询(左右匹配)
             criteria.andNameLike("%"+ req.getName() +"%");
         }
+        // 分页查询：参数为页码和每页的数据量：注意这里的第一页是从1开始，不是从0开始
+        // 该分页查询只对下面的第一条sql语句起作用，后面的sql语句将不再进行分页操作
+        PageHelper.startPage(1, 3);
         // Example相当于sql查询中的where语句，用于select的添加条件
         List<Ebook> ebookList = ebookMapper.selectByExample(ebookExample);
 
+        PageInfo<Ebook> pageInfo = new PageInfo<>(ebookList);
+        // 获取总行数，并日志打印出来(占位符写法)
+        LOG.info("总行数：{}", pageInfo.getTotal());
+        // 获取总页数
+        LOG.info("总页数：{}", pageInfo.getPages());
 
 
         // 持久层返回了List<Ebook>类的ebookList，此时需要转化为List<EbookResp>，先创建一个空的List<EbookResp>
