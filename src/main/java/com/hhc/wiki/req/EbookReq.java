@@ -1,6 +1,7 @@
 package com.hhc.wiki.req;
 
-public class EbookReq {
+// 很多内容都是分页查询，因此后面的很多请求参数类都需要集成分页参数类
+public class EbookReq extends PageReq{
     private Long id;
 
     private String name;
@@ -24,7 +25,7 @@ public class EbookReq {
     // 项目里toString主要用来打日志
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder();
+        final StringBuilder sb = new StringBuilder();
         sb.append(getClass().getSimpleName());
         sb.append(" [");
         sb.append("Hash = ").append(hashCode());

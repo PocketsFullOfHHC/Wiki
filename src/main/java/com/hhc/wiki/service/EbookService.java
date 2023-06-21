@@ -7,6 +7,7 @@ import com.hhc.wiki.domain.EbookExample;
 import com.hhc.wiki.mapper.EbookMapper;
 import com.hhc.wiki.req.EbookReq;
 import com.hhc.wiki.resp.EbookResp;
+import com.hhc.wiki.resp.PageResp;
 import com.hhc.wiki.util.CopyUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,7 +31,7 @@ public class EbookService {
     // @Autowired
     // 将EbookMapper声明
     private EbookMapper ebookMapper;
-    public List<EbookResp> list(EbookReq req){
+    public PageResp<EbookResp> list(EbookReq req){
         // 只要使用到example，前面的两句话都是固定的
         EbookExample ebookExample = new EbookExample();
         // criteria相当于where语句，用来添加条件
@@ -43,7 +44,7 @@ public class EbookService {
         }
         // 分页查询：参数为页码和每页的数据量：注意这里的第一页是从1开始，不是从0开始
         // 该分页查询只对下面的第一条sql语句起作用，后面的sql语句将不再进行分页操作
-        PageHelper.startPage(1, 3);
+        PageHelper.startPage(req.getPage(), req.getSize());
         // Example相当于sql查询中的where语句，用于select的添加条件
         List<Ebook> ebookList = ebookMapper.selectByExample(ebookExample);
 
@@ -76,6 +77,9 @@ public class EbookService {
 //        }
         // 注意工具类里第二个参数并不是List<EbookResp>，而是EbookResp
         List<EbookResp> list = CopyUtil.copyList(ebookList, EbookResp.class);
-        return list;
+        PageResp<EbookResp> pageResp = new PageResp();
+        pageResp.setTotal(pageInfo.getTotal());
+        pageResp.setList(list);
+        return pageResp;
     }
 }
