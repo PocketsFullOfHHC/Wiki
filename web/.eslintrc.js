@@ -19,5 +19,7 @@ module.exports = {
     '@typescript-eslint/no-explicit-any': 0,
     // 取消组件名称驼峰命名法的报错提示
     "vue/multi-word-component-names": "off",
+    // 取消定义变量不使用的报错提示
+    'vue/no-unused-vars': 0,
   }
 }
