@@ -66,7 +66,7 @@ import { defineComponent,onMounted,ref,reactive,toRef } from 'vue';
 import axios from 'axios';
 
 export default defineComponent({
-  name: 'HomeView',
+  name: 'Home',
 
   // vue3新增的初始化方法，是这个组件加载完成后初始会去执行的方法
   // vue3将vue2中的data，method，以及mounted等生命周期函数打包成setup
