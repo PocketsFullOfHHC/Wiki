@@ -62,7 +62,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent,onMounted,ref,reactive,toRef } from 'vue';
+import { defineComponent,onMounted,ref} from 'vue';
 import axios from 'axios';
 
 export default defineComponent({
@@ -73,8 +73,6 @@ export default defineComponent({
   setup(){
     // vue3新增ref为定义响应式数据，即在js中动态修改这里面的值，需要实时反馈到界面上
     const ebooks = ref();
-    // reactive中需要放置一个对象，在该对象中添加属性books属性来放response返回值并将该对象赋值给ebooks
-    const ebooks1 = reactive({books:[]});
     // 一般把界面的的初始化逻辑都写到onMounted中，不建议直接写到setup()中
     onMounted(() => {
       // 返回值为响应内容，用response接收
