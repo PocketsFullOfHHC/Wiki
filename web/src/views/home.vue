@@ -79,11 +79,15 @@ export default defineComponent({
     onMounted(() => {
       // 返回值为响应内容，用response接收
       // 这里可以配置多环境配置：写在.env.dev和.env.prod中并在package.json中修改命令
-      axios.get("/ebook/list").then((response) => {
+      axios.get("/ebook/list", {
+        params: {
+          page: 1,
+          size: 1000
+        }
+      }).then((response) => {
         const data = response.data;
         // ref的对应赋值方法
-        ebooks.value = data.content;
-        ebooks1.books = data.content;
+        ebooks.value = data.content.list;
       })
     });
     const actions: Record<string, string>[] = [
@@ -94,8 +98,6 @@ export default defineComponent({
     return{
       // 前端需要拿到这个数据，因此要在setup后返回这个值，类似data
       ebooks,
-      // 将其转化为响应式数据
-      ebooks2: toRef(ebooks1, "books"),
       actions,
     }
   }

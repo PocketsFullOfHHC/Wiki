@@ -43,7 +43,7 @@
       // 定义分页：当前页数，每页条数
       const pagination = ref({
         current: 1,
-        pageSize: 2,
+        pageSize: 4,
         total: 0
       });
       const loading = ref(false);
@@ -92,13 +92,19 @@
        **/
       const handleQuery = (params: any) => {
         loading.value = true;
-        axios.get("/ebook/list", params).then((response) => {
+        axios.get("/ebook/list", {
+          params: {
+            page: params.page,
+            size: params.size,
+          }
+        }).then((response) => {
           loading.value = false;
           const data = response.data;
-          ebooks.value = data.content;
+          ebooks.value = data.content.list;
 
           // 重置分页按钮：改变页码按钮的激活状态
           pagination.value.current = params.page;
+          pagination.value.total = data.content.total;
         });
       };
 
@@ -114,7 +120,12 @@
       };
 
       onMounted(() => {
-        handleQuery({});
+        // 传参
+        handleQuery({
+          page: 1,
+          // 使用响应式变量pagination必须加上value
+          size: pagination.value.pageSize
+        });
       });
 
       return {
