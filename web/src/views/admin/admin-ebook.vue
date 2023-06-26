@@ -80,7 +80,7 @@
       // 引入分页组件，分页组件内部内置了一些属性：当前页数，每页条数，数据项总数
       const pagination = ref({
         current: 1,
-        pageSize: 1001,
+        pageSize: 4,
         total: 0
       });
       const loading = ref(false);
@@ -168,11 +168,12 @@
         modalLoading.value = true;
         // post请求无需像get请求一样传params
         axios.post("/ebook/save", ebook.value).then((response) => {
+          // 只要后端有返回就需要把loading效果去掉
+          modalLoading.value = false;
           // const data中的data就是CommonResp
           const data = response.data;
           if(data.success){
             modalVisible.value = false;
-            modalLoading.value = false;
 
             // 编辑后重新加载列表
             handleQuery({
@@ -180,6 +181,8 @@
               page: pagination.value.current,
               size: pagination.value.pageSize
             });
+          } else{
+            message.error(data.message);
           }
         });
       };

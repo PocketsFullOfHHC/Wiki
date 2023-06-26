@@ -35,7 +35,7 @@ public class EbookController {
     @PostMapping("/save")
     // 编辑时传入的参数和查询时传入的参数要有所区别：编辑需要传入的参数应该和电子书实体类一样的
     // @RequestBody注解对应的是json方式的POST提交，这样后端才能用json接收到
-    public CommonResp save(@RequestBody EbookSaveReq req) {
+    public CommonResp save(@Valid @RequestBody EbookSaveReq req) {
         // 创建一个返回值通用类的对象，因为查询表返回的是List<Ebook>
         CommonResp resp = new CommonResp<>();
         ebookService.save(req);

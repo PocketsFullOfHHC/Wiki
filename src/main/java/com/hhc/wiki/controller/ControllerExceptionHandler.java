@@ -28,6 +28,7 @@ public class ControllerExceptionHandler {
     public CommonResp validExceptionHandler(BindException e) {
         CommonResp commonResp = new CommonResp();
         LOG.warn("参数校验失败：{}", e.getBindingResult().getAllErrors().get(0).getDefaultMessage());
+        // 将错误信息填写到返回值CommonResp中
         commonResp.setSuccess(false);
         commonResp.setMessage(e.getBindingResult().getAllErrors().get(0).getDefaultMessage());
         return commonResp;
