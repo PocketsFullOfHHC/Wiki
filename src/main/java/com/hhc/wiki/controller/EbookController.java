@@ -1,13 +1,12 @@
 package com.hhc.wiki.controller;
 
-import com.hhc.wiki.req.EbookReq;
+import com.hhc.wiki.req.EbookQueryReq;
+import com.hhc.wiki.req.EbookSaveReq;
 import com.hhc.wiki.resp.CommonResp;
-import com.hhc.wiki.resp.EbookResp;
+import com.hhc.wiki.resp.EbookQueryResp;
 import com.hhc.wiki.resp.PageResp;
 import com.hhc.wiki.service.EbookService;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 
@@ -22,12 +21,22 @@ public class EbookController {
     private EbookService ebookService;
 
     @GetMapping("/list")
-    public CommonResp list(EbookReq req) {
+    public CommonResp list(EbookQueryReq req) {
         // 创建一个返回值通用类的对象，因为查询表返回的是List<Ebook>
-        CommonResp<PageResp<EbookResp>> resp = new CommonResp<>();
-        PageResp<EbookResp> list = ebookService.list(req);
+        CommonResp<PageResp<EbookQueryResp>> resp = new CommonResp<>();
+        PageResp<EbookQueryResp> list = ebookService.list(req);
         // success默认为true，message为null，因此都无需设置
         resp.setContent(list);
+        return resp;
+    }
+
+    @PostMapping("/save")
+    // 编辑时传入的参数和查询时传入的参数要有所区别：编辑需要传入的参数应该和电子书实体类一样的
+    // @RequestBody注解对应的是json方式的POST提交，这样后端才能用json接收到
+    public CommonResp save(@RequestBody EbookSaveReq req) {
+        // 创建一个返回值通用类的对象，因为查询表返回的是List<Ebook>
+        CommonResp resp = new CommonResp<>();
+        ebookService.save(req);
         return resp;
     }
 }

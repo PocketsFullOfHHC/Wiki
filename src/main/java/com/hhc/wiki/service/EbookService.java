@@ -5,8 +5,9 @@ import com.github.pagehelper.PageInfo;
 import com.hhc.wiki.domain.Ebook;
 import com.hhc.wiki.domain.EbookExample;
 import com.hhc.wiki.mapper.EbookMapper;
-import com.hhc.wiki.req.EbookReq;
-import com.hhc.wiki.resp.EbookResp;
+import com.hhc.wiki.req.EbookQueryReq;
+import com.hhc.wiki.req.EbookSaveReq;
+import com.hhc.wiki.resp.EbookQueryResp;
 import com.hhc.wiki.resp.PageResp;
 import com.hhc.wiki.util.CopyUtil;
 import org.slf4j.Logger;
@@ -31,7 +32,7 @@ public class EbookService {
     // @Autowired
     // 将EbookMapper声明
     private EbookMapper ebookMapper;
-    public PageResp<EbookResp> list(EbookReq req){
+    public PageResp<EbookQueryResp> list(EbookQueryReq req){
         // 只要使用到example，前面的两句话都是固定的
         EbookExample ebookExample = new EbookExample();
         // criteria相当于where语句，用来添加条件
@@ -76,10 +77,26 @@ public class EbookService {
 //            respList.add(ebookResp);
 //        }
         // 注意工具类里第二个参数并不是List<EbookResp>，而是EbookResp
-        List<EbookResp> list = CopyUtil.copyList(ebookList, EbookResp.class);
-        PageResp<EbookResp> pageResp = new PageResp();
+        List<EbookQueryResp> list = CopyUtil.copyList(ebookList, EbookQueryResp.class);
+        PageResp<EbookQueryResp> pageResp = new PageResp();
         pageResp.setTotal(pageInfo.getTotal());
         pageResp.setList(list);
         return pageResp;
+    }
+
+    /**
+     * 保存电子书数据
+     * */
+    public void save(EbookSaveReq req){
+        // 对象单体复制
+        Ebook ebook = CopyUtil.copy(req, Ebook.class);
+        if(ObjectUtils.isEmpty(ebook.getId())){
+            // 没有id值说明是新增保存
+            ebookMapper.insert(ebook);
+        }else{
+            // 点击编辑的保存已有数据后的编辑保存，不是新增保存
+            // 根据主键id来更新：点击该方法查看发现传入的参数为ebook类型
+            ebookMapper.updateByPrimaryKey(ebook);
+        }
     }
 }

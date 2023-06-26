@@ -1,7 +1,7 @@
 package com.hhc.wiki.resp;
 
 // 在项目中很多时候并不需要将实体类中所有的信息都返回给前端，例如登录时并不会将密码字段返回给前端，因此建立一个专门接收响应值的实体类
-public class EbookResp {
+public class EbookQueryResp {
     private Long id;
 
     private String name;

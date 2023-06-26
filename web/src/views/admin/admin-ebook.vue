@@ -147,12 +147,25 @@
       const ebook = ref({});
       const modalVisible = ref(false);
       const modalLoading = ref(false);
+      // 点击OK后的逻辑
       const handleModalOk = () => {
         modalLoading.value = true;
-        setTimeout(() => {
-          modalVisible.value = false;
-          modalLoading.value = false;
-        }, 2000);
+        // post请求无需像get请求一样传params
+        axios.post("/ebook/save", ebook.value).then((response) => {
+          // const data中的data就是CommonResp
+          const data = response.data;
+          if(data.success){
+            modalVisible.value = false;
+            modalLoading.value = false;
+
+            // 编辑后重新加载列表
+            handleQuery({
+              // 重新定位当前页
+              page: pagination.value.current,
+              size: pagination.value.pageSize
+            });
+          }
+        });
       };
 
       /**
