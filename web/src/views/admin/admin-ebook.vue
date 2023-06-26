@@ -1,6 +1,11 @@
 <template>
   <a-layout>
     <a-layout-content :style="{ background: '#fff', padding: '24px', margin: 0, minHeight: '280px' }">
+      <p>
+        <a-button type="primary" @click="add()" size="large">
+          新增
+        </a-button>
+      </p>
       <!-- 定义table里面的各种属性：列；每一行都要给一个key(row_key)，这里直接使用查询到数据的id；数据源；分页；
       等待框：分为true或false，如如果为true，则整个表格存在等待效果；执行点击分页的方法 -->
       <a-table
@@ -177,6 +182,15 @@
         ebook.value = record;
       };
 
+      /**
+       * 新增
+       */
+      const add = () => {
+        modalVisible.value = true;
+        // 新增时的表单项应该是空的，这里清空
+        ebook.value = {};
+      };
+
       onMounted(() => {
         // 传参
         handleQuery({
@@ -192,7 +206,10 @@
         columns,
         loading,
         handleTableChange,
+
         edit,
+        add,
+
         ebook,
         modalVisible,
         modalLoading,

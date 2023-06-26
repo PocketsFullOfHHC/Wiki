@@ -10,6 +10,7 @@ import com.hhc.wiki.req.EbookSaveReq;
 import com.hhc.wiki.resp.EbookQueryResp;
 import com.hhc.wiki.resp.PageResp;
 import com.hhc.wiki.util.CopyUtil;
+import com.hhc.wiki.util.SnowFlake;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -32,6 +33,10 @@ public class EbookService {
     // @Autowired
     // 将EbookMapper声明
     private EbookMapper ebookMapper;
+
+    @Resource
+    private SnowFlake snowFlake;
+
     public PageResp<EbookQueryResp> list(EbookQueryReq req){
         // 只要使用到example，前面的两句话都是固定的
         EbookExample ebookExample = new EbookExample();
@@ -92,6 +97,8 @@ public class EbookService {
         Ebook ebook = CopyUtil.copy(req, Ebook.class);
         if(ObjectUtils.isEmpty(ebook.getId())){
             // 没有id值说明是新增保存
+            // 生成id并赋值
+            ebook.setId(snowFlake.nextId());
             ebookMapper.insert(ebook);
         }else{
             // 点击编辑的保存已有数据后的编辑保存，不是新增保存
