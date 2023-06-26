@@ -37,6 +37,7 @@
           <img v-if="cover" :src="cover" alt="avatar" />
         </template>
         <!-- 第二个渲染：放两个按钮，按钮之间要有空格 -->
+        <!-- record指每行的数据：从列表中查询到的数据 -->
         <template #action="{ text, record }">
           <!-- 空格组件 -->
           <a-space size="small">
@@ -87,6 +88,7 @@
   import { defineComponent, onMounted, ref } from 'vue';
   import axios from 'axios';
   import { message } from 'ant-design-vue';
+  import {Tool} from "@/util/tool";
 
   export default defineComponent({
     name: 'AdminEbook',
@@ -212,7 +214,11 @@
       const edit = (record: any) => {
         modalVisible.value = true;
         // 将定义的响应式变量赋值，使其在表单中显示
-        ebook.value = record;
+        // 原版是直接将列表查询出来的值record直接赋值给响应式变量ebook，直接更改record相当于随时在更改响应式变量ebook，
+        // 应该把查询出来的值复制成一个新的对象变量，赋值给ebook
+        // 这样修改旧变量时就不会影响ebook响应式变化了，只有当保存后更改数据库重新加载列表才会更改
+        // ebook.value = record;
+        ebook.value = Tool.copy(record);
       };
 
       /**
