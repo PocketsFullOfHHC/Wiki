@@ -28,9 +28,16 @@
             <a-button type="primary" @click="edit(record)">
               编辑
             </a-button>
-            <a-button type="danger">
-              删除
-            </a-button>
+            <a-popconfirm
+                    title="删除后不可恢复，确认删除?"
+                    ok-text="是"
+                    cancel-text="否"
+                    @confirm="handleDelete(record.id)"
+            >
+                <a-button type="primary" danger>
+                  删除
+                </a-button>
+            </a-popconfirm>
           </a-space>
         </template>
       </a-table>
@@ -56,7 +63,7 @@
         <a-input v-model:value="ebook.category2Id" />
       </a-form-item>
       <a-form-item label="描述">
-        <a-input v-model:value="ebook.desc" type="textarea" />
+        <a-input v-model:value="ebook.description" type="textarea" />
       </a-form-item>
     </a-form>
   </a-modal>
@@ -191,6 +198,25 @@
         ebook.value = {};
       };
 
+      /**
+       * 删除
+       */
+      // Long类型对应的前端类型是number
+      const handleDelete = (id: number) => {
+        axios.delete("/ebook/delete/" + id).then((response) => {
+          // const data中的data就是CommonResp
+          const data = response.data;
+          if(data.success){
+            // 删除成功后重新加载列表
+            handleQuery({
+              // 重新定位当前页
+              page: pagination.value.current,
+              size: pagination.value.pageSize
+            });
+          }
+        });
+      };
+
       onMounted(() => {
         // 传参
         handleQuery({
@@ -214,6 +240,8 @@
         modalVisible,
         modalLoading,
         handleModalOk,
+
+        handleDelete
       }
     }
   });

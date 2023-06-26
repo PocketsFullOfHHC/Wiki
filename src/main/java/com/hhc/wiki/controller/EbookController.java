@@ -39,4 +39,13 @@ public class EbookController {
         ebookService.save(req);
         return resp;
     }
+
+    @DeleteMapping("/delete/{id}")
+    // {id}是restful编码风格传入删除内容的id的方法，加上{}是因为id是变化的。@PathVariable注解可以接收到路径传入的id参数
+    public CommonResp delete(@PathVariable Long id) {
+        // 创建一个返回值通用类的对象，因为查询表返回的是List<Ebook>
+        CommonResp resp = new CommonResp<>();
+        ebookService.delete(id);
+        return resp;
+    }
 }
