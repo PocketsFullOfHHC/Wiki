@@ -2,9 +2,24 @@
   <a-layout>
     <a-layout-content :style="{ background: '#fff', padding: '24px', margin: 0, minHeight: '280px' }">
       <p>
-        <a-button type="primary" @click="add()" size="large">
-          新增
-        </a-button>
+        <!-- 表单绑定param，并在输入框中取到关键字作为param的name值 -->
+        <a-form layout="inline" :model="param">
+          <a-form-item>
+            <a-input v-model:value="param.name" placeholder="名称">
+            </a-input>
+          </a-form-item>
+          <a-form-item>
+            <!-- pagination这种响应式变量在html中用就不需要.value了 -->
+            <a-button type="primary" @click="handleQuery({page: 1, size: pagination.pageSize})">
+              查询
+            </a-button>
+          </a-form-item>
+          <a-form-item>
+            <a-button type="primary" @click="add()">
+              新增
+            </a-button>
+          </a-form-item>
+        </a-form>
       </p>
       <!-- 定义table里面的各种属性：列；每一行都要给一个key(row_key)，这里直接使用查询到数据的id；数据源；分页；
       等待框：分为true或false，如如果为true，则整个表格存在等待效果；执行点击分页的方法 -->
@@ -76,6 +91,9 @@
   export default defineComponent({
     name: 'AdminEbook',
     setup() {
+      const param = ref();
+      // 初始化为一个空对象，不加会报错
+      param.value = {};
       const ebooks = ref();
       // 引入分页组件，分页组件内部内置了一些属性：当前页数，每页条数，数据项总数
       const pagination = ref({
@@ -133,6 +151,7 @@
           params: {
             page: params.page,
             size: params.size,
+            name: param.value.name,
           }
         }).then((response) => {
           loading.value = false;
@@ -234,11 +253,13 @@
       });
 
       return {
+        param,
         ebooks,
         pagination,
         columns,
         loading,
         handleTableChange,
+        handleQuery,
 
         edit,
         add,
