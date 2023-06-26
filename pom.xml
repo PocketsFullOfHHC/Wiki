@@ -53,6 +53,12 @@
             <artifactId>spring-boot-starter-aop</artifactId>
         </dependency>
 
+        <!-- 引入Validation参数校验的相关依赖：为SpringBoot内置，因此不用指定版本号 -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-validation</artifactId>
+        </dependency>
+
         <!-- fastjson：将Java对象转换为JSON格式，当然它也可以将JSON字符串转换为Java对象 -->
         <dependency>
             <groupId>com.alibaba</groupId>

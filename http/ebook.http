@@ -1,6 +1,6 @@
 # 测试Mybatis持久层
 # Spring会自动将参数映射到类(EbookReq)属性，只要类属性的名字和参数的名字是一致的即可
-GET http://localhost:8880/ebook/list?page=1&size=4
+GET http://localhost:8880/ebook/list?page=1&size=1001
 
 ###
 POST http://localhost:8880/ebook/save
@@ -16,3 +16,5 @@ Content-Type: application/x-www-form-urlencoded
 id=99&content=new-element
 
 +###
+
+###

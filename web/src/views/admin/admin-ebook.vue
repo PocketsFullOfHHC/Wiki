@@ -71,6 +71,7 @@
 <script lang="ts">
   import { defineComponent, onMounted, ref } from 'vue';
   import axios from 'axios';
+  import { message } from 'ant-design-vue';
 
   export default defineComponent({
     name: 'AdminEbook',
@@ -79,7 +80,7 @@
       // 引入分页组件，分页组件内部内置了一些属性：当前页数，每页条数，数据项总数
       const pagination = ref({
         current: 1,
-        pageSize: 4,
+        pageSize: 1001,
         total: 0
       });
       const loading = ref(false);
@@ -136,11 +137,14 @@
         }).then((response) => {
           loading.value = false;
           const data = response.data;
-          ebooks.value = data.content.list;
-
-          // 修改分页组件属性：改变页码按钮的激活状态及分页的页数
-          pagination.value.current = params.page;
-          pagination.value.total = data.content.total;
+          if(data.success){
+            ebooks.value = data.content.list;
+            // 修改分页组件属性：改变页码按钮的激活状态及分页的页数
+            pagination.value.current = params.page;
+            pagination.value.total = data.content.total;
+          } else{
+            message.error(data.message);
+          }
         });
       };
 

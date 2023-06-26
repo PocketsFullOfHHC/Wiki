@@ -9,6 +9,7 @@ import com.hhc.wiki.service.EbookService;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import javax.validation.Valid;
 
 // 返回字符串(内容实例)
 @RestController
@@ -21,7 +22,8 @@ public class EbookController {
     private EbookService ebookService;
 
     @GetMapping("/list")
-    public CommonResp list(EbookQueryReq req) {
+    // @Valid开启校验规则
+    public CommonResp list(@Valid EbookQueryReq req) {
         // 创建一个返回值通用类的对象，因为查询表返回的是List<Ebook>
         CommonResp<PageResp<EbookQueryResp>> resp = new CommonResp<>();
         PageResp<EbookQueryResp> list = ebookService.list(req);
