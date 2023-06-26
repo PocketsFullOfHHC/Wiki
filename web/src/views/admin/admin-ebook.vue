@@ -20,7 +20,7 @@
         <template #action="{ text, record }">
           <!-- 空格组件 -->
           <a-space size="small">
-            <a-button type="primary">
+            <a-button type="primary" @click="edit">
               编辑
             </a-button>
             <a-button type="danger">
@@ -31,6 +31,14 @@
       </a-table>
     </a-layout-content>
   </a-layout>
+  <a-modal
+          title="电子书表单"
+          v-model:visible="modalVisible"
+          :confirm-loading="modalLoading"
+          @ok="handleModalOk"
+  >
+    <p>test</p>
+  </a-modal>
 </template>
 <script lang="ts">
   import { defineComponent, onMounted, ref } from 'vue';
@@ -40,7 +48,7 @@
     name: 'AdminEbook',
     setup() {
       const ebooks = ref();
-      // 定义分页：当前页数，每页条数
+      // 引入分页组件，分页组件内部内置了一些属性：当前页数，每页条数，数据项总数
       const pagination = ref({
         current: 1,
         pageSize: 4,
@@ -102,7 +110,7 @@
           const data = response.data;
           ebooks.value = data.content.list;
 
-          // 重置分页按钮：改变页码按钮的激活状态
+          // 修改分页组件属性：改变页码按钮的激活状态及分页的页数
           pagination.value.current = params.page;
           pagination.value.total = data.content.total;
         });
@@ -119,6 +127,24 @@
         });
       };
 
+      // -------- 表单 ---------
+      const modalVisible = ref(false);
+      const modalLoading = ref(false);
+      const handleModalOk = () => {
+        modalLoading.value = true;
+        setTimeout(() => {
+          modalVisible.value = false;
+          modalLoading.value = false;
+        }, 2000);
+      };
+
+      /**
+       * 编辑
+       */
+      const edit = () => {
+        modalVisible.value = true;
+      };
+
       onMounted(() => {
         // 传参
         handleQuery({
@@ -133,7 +159,11 @@
         pagination,
         columns,
         loading,
-        handleTableChange
+        handleTableChange,
+        edit,
+        modalVisible,
+        modalLoading,
+        handleModalOk,
       }
     }
   });
