@@ -72,11 +72,17 @@
       <a-form-item label="名称">
         <a-input v-model:value="ebook.name" />
       </a-form-item>
-      <a-form-item label="分类一">
-        <a-input v-model:value="ebook.category1Id" />
-      </a-form-item>
-      <a-form-item label="分类二">
-        <a-input v-model:value="ebook.category2Id" />
+      <a-form-item label="分类">
+        <!-- 级联下拉框 -->
+        <!-- value值为该级联选择组件中所选择的多个值(这里只有两个分类)所组成的数组，categoryIds为新定义的响应式变量 -->
+        <!-- 下拉框一般会有显示的值和实际取的值，级联下拉框也不例外，label是显示的值，这里显示的是name；value是实际取的值，这里是id -->
+        <!-- children是级联的子属性 -->
+        <!-- field-name里面的id，name，children均为下面绑定的level1的属性 -->
+        <a-cascader
+                v-model:value="categoryIds"
+                :field-names="{ label: 'name', value: 'id', children: 'children' }"
+                :options="level1"
+        />
       </a-form-item>
       <a-form-item label="描述">
         <a-input v-model:value="ebook.description" type="textarea" />
@@ -96,6 +102,11 @@
       const param = ref();
       // 初始化为一个空对象，不加会报错
       param.value = {};
+      // const ebooks = ref({});是一开始就初始化空对象，可以避免空指针异常
+      // const ebooks = ref();是不初始化，容易出现空指针异常
+      // 写个{}，就说明是个空对象，里面什么属性都没有，结果代码里有去为category1Id赋值，所以报没有这个属性。
+      // 不写{}，就相当于只是定义了这么个变量，具体是什么值还没定，由运行时代码来决定。
+      // 写个{}，就说明是个空对象，里面什么属性都没有，结果代码里有去为category1Id赋值，所以报没有这个属性。不写{}，就相当于只是定义了这么个变量，具体是什么值还没定，由运行时代码来决定。
       const ebooks = ref();
       // 引入分页组件，分页组件内部内置了一些属性：当前页数，每页条数，数据项总数
       const pagination = ref({
@@ -181,12 +192,18 @@
       };
 
       // -------- 表单 ---------
-      const ebook = ref({});
+      /**
+       * 数组，[100, 101]对应：前端开发 / Vue
+       */
+      const categoryIds = ref();
+      const ebook = ref();
       const modalVisible = ref(false);
       const modalLoading = ref(false);
       // 点击OK后的逻辑
       const handleModalOk = () => {
         modalLoading.value = true;
+        ebook.value.category1Id = categoryIds.value[0];
+        ebook.value.category2Id = categoryIds.value[1];
         // post请求无需像get请求一样传params
         axios.post("/ebook/save", ebook.value).then((response) => {
           // 只要后端有返回就需要把loading效果去掉
@@ -219,6 +236,7 @@
         // 这样修改旧变量时就不会影响ebook响应式变化了，只有当保存后更改数据库重新加载列表才会更改
         // ebook.value = record;
         ebook.value = Tool.copy(record);
+        categoryIds.value = [ebook.value.category1Id, ebook.value.category2Id]
       };
 
       /**
@@ -249,7 +267,30 @@
         });
       };
 
+      const level1 =  ref();
+      /**
+       * 查询所有分类
+       **/
+      const handleQueryCategory = () => {
+        loading.value = true;
+        axios.get("/category/all").then((response) => {
+          loading.value = false;
+          const data = response.data;
+          if (data.success) {
+            const categorys = data.content;
+            console.log("原始数组：", categorys);
+
+            level1.value = [];
+            level1.value = Tool.array2Tree(categorys, 0);
+            console.log("树形结构：", level1.value);
+          } else {
+            message.error(data.message);
+          }
+        });
+      };
+
       onMounted(() => {
+        handleQueryCategory();
         // 传参
         handleQuery({
           page: 1,
@@ -274,6 +315,8 @@
         modalVisible,
         modalLoading,
         handleModalOk,
+        categoryIds,
+        level1,
 
         handleDelete
       }
