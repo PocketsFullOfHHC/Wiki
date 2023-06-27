@@ -63,8 +63,21 @@
       <a-form-item label="名称">
         <a-input v-model:value="category.name" />
       </a-form-item>
+      <!-- 修改父分类为下拉框 -->
       <a-form-item label="父分类">
-        <a-input v-model:value="category.parent" />
+        <a-select
+                v-model:value="category.parent"
+                ref="select"
+        >
+          <a-select-option value="0">
+            无
+          </a-select-option>
+          <!-- 只有两级，因此父分类只需循环level1即可 -->
+          <!-- :disabled设置不能让自己选择自己的id作为父分类，否则会断枝 -->
+          <a-select-option v-for="c in level1" :key="c.id" :value="c.id" :disabled="category.id === c.id">
+            {{c.name}}
+          </a-select-option>
+        </a-select>
       </a-form-item>
       <a-form-item label="顺序">
         <a-input v-model:value="category.sort" />
@@ -134,6 +147,7 @@
             console.log("原始数组：", categorys.value);
 
             level1.value = [];
+            // 第一层递归时父分类的id均为0
             level1.value = Tool.array2Tree(categorys.value, 0);
             console.log("树形结构：", level1);
           } else{
