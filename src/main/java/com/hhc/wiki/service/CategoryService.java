@@ -37,9 +37,14 @@ public class CategoryService {
     @Resource
     private SnowFlake snowFlake;
 
+    /**
+     * 分页查询
+     **/
     public PageResp<CategoryQueryResp> list(CategoryQueryReq req){
         // 只要使用到example，前面的两句话都是固定的
         CategoryExample categoryExample = new CategoryExample();
+        // 按sort字段的升序排序
+        categoryExample.setOrderByClause("sort asc");
         // criteria相当于where语句，用来添加条件
         CategoryExample.Criteria criteria = categoryExample.createCriteria();
         // 分页查询：参数为页码和每页的数据量：注意这里的第一页是从1开始，不是从0开始
@@ -60,6 +65,18 @@ public class CategoryService {
         pageResp.setTotal(pageInfo.getTotal());
         pageResp.setList(list);
         return pageResp;
+    }
+
+    /**
+     * 查询全部
+     * */
+    public List<CategoryQueryResp> all(){
+        CategoryExample categoryExample = new CategoryExample();
+        // 按sort字段的升序排序
+        categoryExample.setOrderByClause("sort asc");
+        List<Category> categoryList = categoryMapper.selectByExample(categoryExample);
+        List<CategoryQueryResp> list = CopyUtil.copyList(categoryList, CategoryQueryResp.class);
+        return list;
     }
 
     /**

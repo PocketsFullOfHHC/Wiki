@@ -2,14 +2,15 @@ package com.hhc.wiki.controller;
 
 import com.hhc.wiki.req.CategoryQueryReq;
 import com.hhc.wiki.req.CategorySaveReq;
-import com.hhc.wiki.resp.CommonResp;
 import com.hhc.wiki.resp.CategoryQueryResp;
+import com.hhc.wiki.resp.CommonResp;
 import com.hhc.wiki.resp.PageResp;
 import com.hhc.wiki.service.CategoryService;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.validation.Valid;
+import java.util.List;
 
 // 返回字符串(内容实例)
 @RestController
@@ -27,6 +28,17 @@ public class CategoryController {
         // 创建一个返回值通用类的对象，因为查询表返回的是List<Category>
         CommonResp<PageResp<CategoryQueryResp>> resp = new CommonResp<>();
         PageResp<CategoryQueryResp> list = categoryService.list(req);
+        // success默认为true，message为null，因此都无需设置
+        resp.setContent(list);
+        return resp;
+    }
+
+    @GetMapping("/all")
+    // @Valid开启校验规则
+    public CommonResp all() {
+        // 创建一个返回值通用类的对象，因为查询表返回的是List<Category>
+        CommonResp<List<CategoryQueryResp>> resp = new CommonResp<>();
+        List<CategoryQueryResp> list = categoryService.all();
         // success默认为true，message为null，因此都无需设置
         resp.setContent(list);
         return resp;
