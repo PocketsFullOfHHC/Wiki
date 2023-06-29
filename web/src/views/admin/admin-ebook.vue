@@ -36,7 +36,12 @@
         <template #cover="{ text: cover }">
           <img v-if="cover" :src="cover" alt="avatar" />
         </template>
-        <!-- 第二个渲染：放两个按钮，按钮之间要有空格 -->
+        <!-- 第二个渲染：将分类渲染到界面上，如果是不带具体字段的渲染，text和record是一致的，均为渲染的整条数据，
+        如果是带具体字段的渲染，如上面封面的渲染，它的text就是具体的封面的这个字段 -->
+        <template v-slot:category="{ text, record }">
+          <span>{{ getCategoryName(record.category1Id) }} / {{ getCategoryName(record.category2Id) }}</span>
+        </template>
+        <!-- 第三个渲染：放两个按钮，按钮之间要有空格 -->
         <!-- record指每行的数据：从列表中查询到的数据 -->
         <template #action="{ text, record }">
           <!-- 空格组件 -->
@@ -128,13 +133,9 @@
           dataIndex: 'name'
         },
         {
-          title: '分类一',
-          key: 'category1Id',
-          dataIndex: 'category1Id'
-        },
-        {
-          title: '分类二',
-          dataIndex: 'category2Id'
+          title: '分类',
+          // 给一个渲染，对应上面名为category的渲染，会自动带上上面的两个参数text和record
+          slots: { customRender: 'category' }
         },
         {
           title: '文档数',
@@ -268,6 +269,8 @@
       };
 
       const level1 =  ref();
+      // 定义全局非响应式变量(不在html中显示，只在js中计算应用)
+      let categorys: any;
       /**
        * 查询所有分类
        **/
@@ -277,7 +280,7 @@
           loading.value = false;
           const data = response.data;
           if (data.success) {
-            const categorys = data.content;
+            categorys = data.content;
             console.log("原始数组：", categorys);
 
             level1.value = [];
@@ -288,6 +291,21 @@
           }
         });
       };
+
+      /**
+       * 获取指定分类id对应的分类名
+       * */
+      const getCategoryName = (cid: number) => {
+          // console.log(cid)
+          let result = "";
+          categorys.forEach((item: any) => {
+              if (item.id === cid) {
+                  // return item.name; // 注意，这里直接return不起作用
+                  result = item.name;
+                }
+            });
+          return result;
+        };
 
       onMounted(() => {
         handleQueryCategory();
@@ -307,6 +325,7 @@
         loading,
         handleTableChange,
         handleQuery,
+        getCategoryName,
 
         edit,
         add,
