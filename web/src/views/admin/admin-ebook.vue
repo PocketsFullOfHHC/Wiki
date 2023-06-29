@@ -288,6 +288,12 @@
             level1.value = [];
             level1.value = Tool.array2Tree(categorys, 0);
             console.log("树形结构：", level1.value);
+
+            // 加载完分类后，再加载电子书，否则如果分类树加载很慢，则电子书渲染会报错
+            handleQuery({
+              page: 1,
+              size: pagination.value.pageSize,
+            });
           } else {
             message.error(data.message);
           }
@@ -311,12 +317,6 @@
 
       onMounted(() => {
         handleQueryCategory();
-        // 传参
-        handleQuery({
-          page: 1,
-          // 使用响应式变量pagination必须加上value
-          size: pagination.value.pageSize
-        });
       });
 
       return {
