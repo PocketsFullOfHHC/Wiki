@@ -48,6 +48,10 @@ public class EbookService {
             // 使用模糊查询(左右匹配)
             criteria.andNameLike("%"+ req.getName() +"%");
         }
+        // 判断是否有二级分类参数
+        if(!ObjectUtils.isEmpty(req.getCategoryId2())){
+            criteria.andCategory2IdEqualTo(req.getCategoryId2());
+        }
         // 分页查询：参数为页码和每页的数据量：注意这里的第一页是从1开始，不是从0开始
         // 该分页查询只对下面的第一条sql语句起作用，后面的sql语句将不再进行分页操作
         PageHelper.startPage(req.getPage(), req.getSize());

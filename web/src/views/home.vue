@@ -89,16 +89,35 @@ export default defineComponent({
 
     // ref中传的值为默认值
     const isShowWelcome = ref(true);
+    let categoryId2 = 0;
+
+
+    const handleQueryEbook = () => {
+      axios.get("/ebook/list", {
+        params: {
+          page: 1,
+          size: 1000,
+          categoryId2: categoryId2,
+        }
+      }).then((response) => {
+        const data = response.data;
+        // ref的对应赋值方法
+        ebooks.value = data.content.list;
+      })
+    };
+
     // value是click事件(handleClick只是函数名，可以随意该，click才是真正的事件名)自带的参数，可以打印出来看看是什么(也可以查看组件的API文档)
     const handleClick = (value: any) => {
       // console.log("menu click", value);
-      // if(value.key === 'welcome'){
-      //   isShowWelcome.value = true;
-      // } else{
-      //   isShowWelcome.value = false;
-      // }
+      if(value.key === 'welcome'){
+        isShowWelcome.value = true;
+      } else{
+        categoryId2 = value.key;
+        isShowWelcome.value = false;
+        handleQueryEbook();
+      }
       // 简写
-      isShowWelcome.value = value.key === 'welcome';
+      // isShowWelcome.value = value.key === 'welcome';
     };
 
     // 一般把界面的的初始化逻辑都写到onMounted中，不建议直接写到setup()中
@@ -106,16 +125,6 @@ export default defineComponent({
       handleQueryCategory();
       // 返回值为响应内容，用response接收
       // 这里可以配置多环境配置：写在.env.dev和.env.prod中并在package.json中修改命令
-      axios.get("/ebook/list", {
-        params: {
-          page: 1,
-          size: 1000
-        }
-      }).then((response) => {
-        const data = response.data;
-        // ref的对应赋值方法
-        ebooks.value = data.content.list;
-      })
     });
     const actions: Record<string, string>[] = [
       { type: 'StarOutlined', text: '156' },
