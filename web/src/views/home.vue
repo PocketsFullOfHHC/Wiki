@@ -8,10 +8,8 @@
               @click="handleClick"
       >
         <a-menu-item key="welcome">
-          <router-link :to="'/'">
             <MailOutlined />
             <span>欢迎</span>
-          </router-link>
         </a-menu-item>
         <a-sub-menu v-for="item in level1" :key="item.id">
           <!-- 一级菜单 -->
@@ -28,8 +26,11 @@
     <a-layout-content
             :style="{ background: '#fff', padding: '24px', margin: 0, minHeight: '280px' }"
     >
+      <div class="welcome" v-show="isShowWelcome">
+        <h>欢迎使用HHC知识库</h>
+      </div>
       <!-- :grid = "{gutter: 20, column: 3}"：每行三列，列与列之间间隔为20px -->
-      <a-list item-layout="vertical" size="large" :grid = "{gutter: 20, column: 3}"  :data-source="ebooks">
+      <a-list v-show="!isShowWelcome" item-layout="vertical" size="large" :grid = "{gutter: 20, column: 3}"  :data-source="ebooks">
         <template #renderItem="{ item }">
           <a-list-item key="item.name">
             <template #actions>
@@ -86,8 +87,18 @@ export default defineComponent({
       });
     };
 
-    const handleClick = () => {
-      console.log("menu click")
+    // ref中传的值为默认值
+    const isShowWelcome = ref(true);
+    // value是click事件(handleClick只是函数名，可以随意该，click才是真正的事件名)自带的参数，可以打印出来看看是什么(也可以查看组件的API文档)
+    const handleClick = (value: any) => {
+      // console.log("menu click", value);
+      // if(value.key === 'welcome'){
+      //   isShowWelcome.value = true;
+      // } else{
+      //   isShowWelcome.value = false;
+      // }
+      // 简写
+      isShowWelcome.value = value.key === 'welcome';
     };
 
     // 一般把界面的的初始化逻辑都写到onMounted中，不建议直接写到setup()中
@@ -116,7 +127,9 @@ export default defineComponent({
       ebooks,
       actions,
       handleClick,
-      level1
+      level1,
+
+      isShowWelcome,
     }
   }
 });
