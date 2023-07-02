@@ -20,14 +20,17 @@
             </a-form>
           </p>
           <!-- 定义table里面的各种属性：列；每一行都要给一个key(row_key)，这里直接使用查询到数据的id；数据源；
-          等待框：分为true或false，如如果为true，则整个表格存在等待效果 -->
+          等待框：分为true或false，如如果为true，则整个表格存在等待效果，defaultExpandAllRows设置表格树默认展开
+          defaultExpandAllRows并不是响应式的，因此需要等到数据level1获取成功后才去展示这个表格 -->
           <a-table
+                  v-if="level1.length > 0"
                   :columns="columns"
                   :row-key="record => record.id"
                   :data-source="level1"
                   :loading="loading"
                   :pagination="false"
                   size="small"
+                  :defaultExpandAllRows="true"
           >
             <!-- 第一个渲染 -->
             <template #name="{ text, record}">
@@ -156,6 +159,8 @@
        * }]
        */
       const level1 = ref(); // 一级文档树，children属性就是二级文档
+      // 为了上面.length不报错，这里先初始化
+      level1.value = [];
 
       /**
        * 数据查询
