@@ -46,7 +46,7 @@
         <template #action="{ text, record }">
           <!-- 空格组件 -->
           <a-space size="small">
-            <router-link to="doc" >
+            <router-link :to="'/admin/doc?ebookId=' + record.id" >
               <a-button type="primary">
                 文档管理
               </a-button>

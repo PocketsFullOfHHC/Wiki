@@ -90,10 +90,21 @@
   import axios from 'axios';
   import { message } from 'ant-design-vue';
   import {Tool} from "@/util/tool";
+  import {useRoute} from "vue-router";
 
   export default defineComponent({
     name: 'AdminDoc',
     setup() {
+      // useRoute()是路由内置的函数，通过该函数可以得到路由的各种信息
+      const route = useRoute();
+      console.log("路由：", route);
+      console.log("route.path：", route.path);
+      console.log("route.query：", route.query);
+      console.log("route.param：", route.params);
+      // 全路径：包括路径和参数
+      console.log("route.fullPath：", route.fullPath);
+      console.log("route.name：", route.name);
+      console.log("route.meta：", route.meta);
       const param = ref();
       // 初始化为一个空对象，不加会报错
       param.value = {};
@@ -236,7 +247,9 @@
       const add = () => {
         modalVisible.value = true;
         // 新增时的表单项应该是空的，这里清空
-        doc.value = {};
+        doc.value = {
+          ebookId: route.query.ebookId
+        };
 
         treeSelectData.value = Tool.copy(level1.value);
 
