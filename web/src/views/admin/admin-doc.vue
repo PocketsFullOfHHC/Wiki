@@ -297,6 +297,9 @@
        */
       // Long类型对应的前端类型是number
       const handleDelete = (id: number) => {
+        // 清空数组，否则多次删除时，数组会一直增加
+        deleteIds.length = 0;
+        deleteNames.length = 0;
         getDeleteIds(level1.value, id);
         Modal.confirm({
           title: '重要提醒',
