@@ -1,10 +1,11 @@
 <template>
   <a-layout>
     <a-layout-content :style="{ background: '#fff', padding: '24px', margin: 0, minHeight: '280px' }">
-      <a-row>
+      <!-- 增加栅格之间的间隙：建议数值设置为16+8n -->
+      <a-row :gutter="24">
         <a-col :span="8">
           <p>
-            <!-- 表单绑定param，并在输入框中取到关键字作为param的name值 -->
+            <!-- 表单绑定param，model为表单数据对象，并在输入框中取到关键字作为param的name值 -->
             <a-form layout="inline" :model="param">
               <a-form-item>
                 <a-button type="primary" @click="handleQuery()">
@@ -26,18 +27,18 @@
                   :data-source="level1"
                   :loading="loading"
                   :pagination="false"
+                  size="small"
           >
-            <!-- #是插槽的简写方式：#cover指定作用域 -->
-            <!-- 第一个渲染：渲染封面到界面上：如果cover项不空，就用src渲染上去 -->
-            <template #cover="{ text: cover }">
-              <img v-if="cover" :src="cover" alt="avatar" />
+            <!-- 第一个渲染 -->
+            <template #name="{ text, record}">
+              {{record.sort}} {{text}}
             </template>
             <!-- 第二个渲染：放两个按钮，按钮之间要有空格 -->
             <!-- record指每行的数据：从列表中查询到的数据 -->
             <template #action="{ text, record }">
               <!-- 空格组件 -->
               <a-space size="small">
-                <a-button type="primary" @click="edit(record)">
+                <a-button type="primary" @click="edit(record)" size="small">
                   编辑
                 </a-button>
                 <a-popconfirm
@@ -46,7 +47,7 @@
                         cancel-text="否"
                         @confirm="handleDelete(record.id)"
                 >
-                  <a-button type="primary" danger>
+                  <a-button type="primary" danger size="small">
                     删除
                   </a-button>
                 </a-popconfirm>
@@ -55,15 +56,21 @@
           </a-table>
         </a-col>
         <a-col :span="16">
-          <a-form :model="doc" :label-col="{ span: 6 }" :wrapper-col="{ span: 18 }">
-            <a-form-item label="名称">
-              <a-input v-model:value="doc.name" />
+          <p>
+            <a-form layout="inline" :model="param">
+              <a-form-item>
+                <a-button type="primary" @click="handleSave()">
+                  保存
+                </a-button>
+              </a-form-item>
+            </a-form>
+          </p>
+          <!-- layout="vertical"为纵向的布局 -->
+          <a-form :model="doc" layout="vertical">
+            <a-form-item>
+              <a-input v-model:value="doc.name" placeholder="名称"/>
             </a-form-item>
-            <!-- 修改父文档为下拉框 -->
-            <a-form-item label="父文档">
-              <!-- 设置最高下拉高度400px，设置树形结构的json数据：treeSelectData，
-              不用level1的原因：我们需要下拉框的数据中存在无等等选择，但level1的数据需要渲染到表格上，这样表格上就会存在“无”这一项了
-              replaceFields为属性转化(新版本中为fieldNames，且title更改为label)：因为该组件要的数据是title，value和key，而我们给的是id和name，需要属性转化一下 -->
+            <a-form-item>
               <a-tree-select
                       v-model:value="doc.parent"
                       style="width: 100%"
@@ -75,10 +82,10 @@
               >
               </a-tree-select>
             </a-form-item>
-            <a-form-item label="顺序">
-              <a-input v-model:value="doc.sort" />
+            <a-form-item>
+              <a-input v-model:value="doc.sort" placeholder="顺序"/>
             </a-form-item>
-            <a-form-item label="内容">
+            <a-form-item>
               <div id="content"></div>
             </a-form-item>
           </a-form>
@@ -108,7 +115,6 @@
   export default defineComponent({
     name: 'AdminDoc',
     setup() {
-      const editor = new E('#content');
       // useRoute()是路由内置的函数，通过该函数可以得到路由的各种信息
       const route = useRoute();
       console.log("路由：", route);
@@ -128,16 +134,8 @@
       const columns = [
         {
           title: '名称',
-          dataIndex: 'name'
-        },
-        {
-          title: '父文档',
-          key: 'parent',
-          dataIndex: 'parent'
-        },
-        {
-          title: '顺序',
-          dataIndex: 'sort'
+          dataIndex: 'name',
+          slots: { customRender: 'name' }
         },
         {
           title: 'Action',
@@ -190,10 +188,12 @@
       const doc = ref({});
       const modalVisible = ref(false);
       const modalLoading = ref(false);
+      const editor = new E('#content');
+      // 防止下拉框被富文本框遮住
+      editor.config.zIndex = 0;
 
-
-      // 点击OK后的逻辑
-      const handleModalOk = () => {
+      // 点击保存后的逻辑
+      const handleSave = () => {
         modalLoading.value = true;
         // post请求无需像get请求一样传params
         axios.post("/doc/save", doc.value).then((response) => {
@@ -334,10 +334,9 @@
       };
 
       onMounted(() => {
+        handleQuery();
         editor.i18next = i18next;
         editor.create();
-        // 传参
-        handleQuery();
       });
 
       return {
@@ -354,7 +353,7 @@
         doc,
         modalVisible,
         modalLoading,
-        handleModalOk,
+        handleSave,
 
         handleDelete,
 
