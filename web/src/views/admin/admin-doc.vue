@@ -1,92 +1,99 @@
 <template>
   <a-layout>
     <a-layout-content :style="{ background: '#fff', padding: '24px', margin: 0, minHeight: '280px' }">
-      <p>
-        <!-- 表单绑定param，并在输入框中取到关键字作为param的name值 -->
-        <a-form layout="inline" :model="param">
-          <a-form-item>
-            <a-button type="primary" @click="handleQuery()">
-              查询
-            </a-button>
-          </a-form-item>
-          <a-form-item>
-            <a-button type="primary" @click="add()">
-              新增
-            </a-button>
-          </a-form-item>
-        </a-form>
-      </p>
-      <!-- 定义table里面的各种属性：列；每一行都要给一个key(row_key)，这里直接使用查询到数据的id；数据源；
-      等待框：分为true或false，如如果为true，则整个表格存在等待效果 -->
-      <a-table
-              :columns="columns"
-              :row-key="record => record.id"
-              :data-source="level1"
-              :loading="loading"
-              :pagination="false"
-      >
-        <!-- #是插槽的简写方式：#cover指定作用域 -->
-        <!-- 第一个渲染：渲染封面到界面上：如果cover项不空，就用src渲染上去 -->
-        <template #cover="{ text: cover }">
-          <img v-if="cover" :src="cover" alt="avatar" />
-        </template>
-        <!-- 第二个渲染：放两个按钮，按钮之间要有空格 -->
-        <!-- record指每行的数据：从列表中查询到的数据 -->
-        <template #action="{ text, record }">
-          <!-- 空格组件 -->
-          <a-space size="small">
-            <a-button type="primary" @click="edit(record)">
-              编辑
-            </a-button>
-            <a-popconfirm
-                    title="删除后不可恢复，确认删除?"
-                    ok-text="是"
-                    cancel-text="否"
-                    @confirm="handleDelete(record.id)"
-            >
-                <a-button type="primary" danger>
-                  删除
+      <a-row>
+        <a-col :span="8">
+          <p>
+            <!-- 表单绑定param，并在输入框中取到关键字作为param的name值 -->
+            <a-form layout="inline" :model="param">
+              <a-form-item>
+                <a-button type="primary" @click="handleQuery()">
+                  查询
                 </a-button>
-            </a-popconfirm>
-          </a-space>
-        </template>
-      </a-table>
+              </a-form-item>
+              <a-form-item>
+                <a-button type="primary" @click="add()">
+                  新增
+                </a-button>
+              </a-form-item>
+            </a-form>
+          </p>
+          <!-- 定义table里面的各种属性：列；每一行都要给一个key(row_key)，这里直接使用查询到数据的id；数据源；
+          等待框：分为true或false，如如果为true，则整个表格存在等待效果 -->
+          <a-table
+                  :columns="columns"
+                  :row-key="record => record.id"
+                  :data-source="level1"
+                  :loading="loading"
+                  :pagination="false"
+          >
+            <!-- #是插槽的简写方式：#cover指定作用域 -->
+            <!-- 第一个渲染：渲染封面到界面上：如果cover项不空，就用src渲染上去 -->
+            <template #cover="{ text: cover }">
+              <img v-if="cover" :src="cover" alt="avatar" />
+            </template>
+            <!-- 第二个渲染：放两个按钮，按钮之间要有空格 -->
+            <!-- record指每行的数据：从列表中查询到的数据 -->
+            <template #action="{ text, record }">
+              <!-- 空格组件 -->
+              <a-space size="small">
+                <a-button type="primary" @click="edit(record)">
+                  编辑
+                </a-button>
+                <a-popconfirm
+                        title="删除后不可恢复，确认删除?"
+                        ok-text="是"
+                        cancel-text="否"
+                        @confirm="handleDelete(record.id)"
+                >
+                  <a-button type="primary" danger>
+                    删除
+                  </a-button>
+                </a-popconfirm>
+              </a-space>
+            </template>
+          </a-table>
+        </a-col>
+        <a-col :span="16">
+          <a-form :model="doc" :label-col="{ span: 6 }" :wrapper-col="{ span: 18 }">
+            <a-form-item label="名称">
+              <a-input v-model:value="doc.name" />
+            </a-form-item>
+            <!-- 修改父文档为下拉框 -->
+            <a-form-item label="父文档">
+              <!-- 设置最高下拉高度400px，设置树形结构的json数据：treeSelectData，
+              不用level1的原因：我们需要下拉框的数据中存在无等等选择，但level1的数据需要渲染到表格上，这样表格上就会存在“无”这一项了
+              replaceFields为属性转化(新版本中为fieldNames，且title更改为label)：因为该组件要的数据是title，value和key，而我们给的是id和name，需要属性转化一下 -->
+              <a-tree-select
+                      v-model:value="doc.parent"
+                      style="width: 100%"
+                      :dropdown-style="{ maxHeight: '400px', overflow: 'auto' }"
+                      :tree-data="treeSelectData"
+                      placeholder="请选择父文档"
+                      tree-default-expand-all
+                      :fieldNames="{label: 'name', value: 'id'}"
+              >
+              </a-tree-select>
+            </a-form-item>
+            <a-form-item label="顺序">
+              <a-input v-model:value="doc.sort" />
+            </a-form-item>
+            <a-form-item label="内容">
+              <div id="content"></div>
+            </a-form-item>
+          </a-form>
+        </a-col>
+      </a-row>
+
     </a-layout-content>
   </a-layout>
-  <a-modal
-          title="文档表单"
-          v-model:visible="modalVisible"
-          :confirm-loading="modalLoading"
-          @ok="handleModalOk"
-  >
-    <a-form :model="doc" :label-col="{ span: 6 }" :wrapper-col="{ span: 18 }">
-      <a-form-item label="名称">
-        <a-input v-model:value="doc.name" />
-      </a-form-item>
-      <!-- 修改父文档为下拉框 -->
-      <a-form-item label="父文档">
-        <!-- 设置最高下拉高度400px，设置树形结构的json数据：treeSelectData，
-        不用level1的原因：我们需要下拉框的数据中存在无等等选择，但level1的数据需要渲染到表格上，这样表格上就会存在“无”这一项了
-        replaceFields为属性转化(新版本中为fieldNames，且title更改为label)：因为该组件要的数据是title，value和key，而我们给的是id和name，需要属性转化一下 -->
-        <a-tree-select
-                v-model:value="doc.parent"
-                style="width: 100%"
-                :dropdown-style="{ maxHeight: '400px', overflow: 'auto' }"
-                :tree-data="treeSelectData"
-                placeholder="请选择父文档"
-                tree-default-expand-all
-                :fieldNames="{label: 'name', value: 'id'}"
-        >
-        </a-tree-select>
-      </a-form-item>
-      <a-form-item label="顺序">
-        <a-input v-model:value="doc.sort" />
-      </a-form-item>
-      <a-form-item label="内容">
-        <div id="content"></div>
-      </a-form-item>
-    </a-form>
-  </a-modal>
+<!--  <a-modal-->
+<!--          title="文档表单"-->
+<!--          v-model:visible="modalVisible"-->
+<!--          :confirm-loading="modalLoading"-->
+<!--          @ok="handleModalOk"-->
+<!--  >-->
+<!--  </a-modal>-->
 </template>
 <script lang="ts">
   import { defineComponent, onMounted, ref, createVNode } from 'vue';
@@ -101,6 +108,7 @@
   export default defineComponent({
     name: 'AdminDoc',
     setup() {
+      const editor = new E('#content');
       // useRoute()是路由内置的函数，通过该函数可以得到路由的各种信息
       const route = useRoute();
       console.log("路由：", route);
@@ -182,7 +190,7 @@
       const doc = ref({});
       const modalVisible = ref(false);
       const modalLoading = ref(false);
-      const editor = new E('#content');
+
 
       // 点击OK后的逻辑
       const handleModalOk = () => {
@@ -281,11 +289,6 @@
 
         // 在选择树前面添加一个"无"
         treeSelectData.value.unshift({id: 0, name: '无'});
-
-        setTimeout(function () {
-          editor.i18next = i18next;
-          editor.create();
-        }, 100);
       };
 
       /**
@@ -302,11 +305,6 @@
 
         // 为选择树添加一个"无"
         treeSelectData.value.unshift({id: 0, name: '无'});
-        setTimeout(function () {
-          // 下载i18next的包并在这里配置解决富文本框第二次初始化报错的
-          editor.i18next = i18next;
-          editor.create();
-        }, 100);
       };
 
       /**
@@ -336,6 +334,8 @@
       };
 
       onMounted(() => {
+        editor.i18next = i18next;
+        editor.create();
         // 传参
         handleQuery();
       });
