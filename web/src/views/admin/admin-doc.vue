@@ -65,19 +65,19 @@
       </a-form-item>
       <!-- 修改父文档为下拉框 -->
       <a-form-item label="父文档">
-        <a-select
+        <!-- 设置最高下拉高度400px，设置树形结构的json数据：treeSelectData，
+        不用level1的原因：我们需要下拉框的数据中存在无等等选择，但level1的数据需要渲染到表格上，这样表格上就会存在“无”这一项了
+        replaceFields为属性转化(新版本中为fieldNames，且title更改为label)：因为该组件要的数据是title，value和key，而我们给的是id和name，需要属性转化一下 -->
+        <a-tree-select
                 v-model:value="doc.parent"
-                ref="select"
+                style="width: 100%"
+                :dropdown-style="{ maxHeight: '400px', overflow: 'auto' }"
+                :tree-data="treeSelectData"
+                placeholder="请选择父文档"
+                tree-default-expand-all
+                :fieldNames="{label: 'name', value: 'id'}"
         >
-          <a-select-option value="0">
-            无
-          </a-select-option>
-          <!-- 只有两级，因此父文档只需循环level1即可 -->
-          <!-- :disabled设置不能让自己选择自己的id作为父文档，否则会断枝 -->
-          <a-select-option v-for="c in level1" :key="c.id" :value="c.id" :disabled="doc.id === c.id">
-            {{c.name}}
-          </a-select-option>
-        </a-select>
+        </a-tree-select>
       </a-form-item>
       <a-form-item label="顺序">
         <a-input v-model:value="doc.sort" />
@@ -139,6 +139,8 @@
        **/
       const handleQuery = () => {
         loading.value = true;
+        // 如果不清空现有数据，则编辑保存重新加载数据后，再点编辑，则列表显示的还是编辑前的数据
+        level1.value = [];
         axios.get("/doc/all").then((response) => {
           loading.value = false;
           const data = response.data;
@@ -157,6 +159,9 @@
       };
 
       // -------- 表单 ---------
+      // 因为树选择组件的属性状态，会随当前编辑的节点而变化，所以单独声明一个响应式变量
+      const treeSelectData = ref();
+      treeSelectData.value = [];
       const doc = ref({});
       const modalVisible = ref(false);
       const modalLoading = ref(false);
@@ -180,11 +185,49 @@
       };
 
       /**
+       * 将当前编辑的节点及其子孙节点全部置为disabled，否则会出现断枝
+       */
+      const setDisable = (treeSelectData: any, id: any) => {
+        // console.log(treeSelectData, id);
+        // 遍历数组，即遍历某一层节点
+        for (let i = 0; i < treeSelectData.length; i++) {
+          const node = treeSelectData[i];
+          if (node.id === id) {
+            // 如果当前节点就是目标节点
+            console.log("disabled", node);
+            // 将目标节点设置为disabled
+            node.disabled = true;
+
+            // 遍历所有子节点，将所有子节点全部都加上disabled
+            const children = node.children;
+            if (Tool.isNotEmpty(children)) {
+              for (let j = 0; j < children.length; j++) {
+                setDisable(children, children[j].id)
+              }
+            }
+          } else {
+            // 如果当前节点不是目标节点，则到其子节点再找找看。
+            const children = node.children;
+            if (Tool.isNotEmpty(children)) {
+              setDisable(children, id);
+            }
+          }
+        }
+      };
+
+      /**
        * 编辑
        */
       const edit = (record: any) => {
         modalVisible.value = true;
         doc.value = Tool.copy(record);
+        // 复制level1的数据到树形下拉框的数据中
+        treeSelectData.value = Tool.copy(level1.value);
+        // 不能选择当前节点及其所有子孙节点，作为父节点，会使树断开
+        setDisable(treeSelectData.value, record.id);
+
+        // 在选择树前面添加一个"无"
+        treeSelectData.value.unshift({id: 0, name: '无'});
       };
 
       /**
@@ -194,6 +237,11 @@
         modalVisible.value = true;
         // 新增时的表单项应该是空的，这里清空
         doc.value = {};
+
+        treeSelectData.value = Tool.copy(level1.value);
+
+        // 为选择树添加一个"无"
+        treeSelectData.value.unshift({id: 0, name: '无'});
       };
 
       /**
@@ -232,7 +280,9 @@
         modalLoading,
         handleModalOk,
 
-        handleDelete
+        handleDelete,
+
+        treeSelectData,
       }
     }
   });
