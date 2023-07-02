@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.validation.Valid;
+import java.util.Arrays;
 import java.util.List;
 
 // 返回字符串(内容实例)
@@ -54,12 +55,14 @@ public class DocController {
         return resp;
     }
 
-    @DeleteMapping("/delete/{id}")
+    @DeleteMapping("/delete/{idsStr}")
     // {id}是restful编码风格传入删除内容的id的方法，加上{}是因为id是变化的。@PathVariable注解可以接收到路径传入的id参数
-    public CommonResp delete(@PathVariable Long id) {
+    public CommonResp delete(@PathVariable String idsStr) {
         // 创建一个返回值通用类的对象，因为查询表返回的是List<Doc>
         CommonResp resp = new CommonResp<>();
-        docService.delete(id);
+        // 先将字符串转为数组，再将其转化为集合List
+        List<String> list = Arrays.asList(idsStr.split(","));
+        docService.delete(list);
         return resp;
     }
 }
