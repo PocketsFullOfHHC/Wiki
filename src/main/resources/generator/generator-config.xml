@@ -44,8 +44,9 @@
         <!-- <table tableName="demo" domainObjectName="Demo"/> -->
         <!-- 生成domain的名称可以省略，仍然可以生成大写的名字 -->
         <!-- <table tableName= "ebook"/> -->
-        <!--<table tableName= "category"/>-->
-        <table tableName = "doc" />
+        <!-- <table tableName= "category"/> -->
+        <!-- <table tableName = "doc" /> -->
+        <table tableName = "content" />
     </context>
 </generatorConfiguration>
 
