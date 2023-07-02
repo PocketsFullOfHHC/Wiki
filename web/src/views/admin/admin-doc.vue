@@ -86,11 +86,12 @@
   </a-modal>
 </template>
 <script lang="ts">
-  import { defineComponent, onMounted, ref } from 'vue';
+  import { defineComponent, onMounted, ref, createVNode } from 'vue';
   import axios from 'axios';
-  import { message } from 'ant-design-vue';
+  import { message, Modal } from 'ant-design-vue';
   import {Tool} from "@/util/tool";
   import {useRoute} from "vue-router";
+  import ExclamationCircleOutlined from "@ant-design/icons-vue/ExclamationCircleOutlined";
 
   export default defineComponent({
     name: 'AdminDoc',
@@ -226,7 +227,8 @@
         }
       };
 
-      const ids: Array<string> = [];
+      const deleteIds: Array<string> = [];
+      const deleteNames: Array<string> = [];
       /**
        * 查找要删除的整根树枝
        */
@@ -239,7 +241,8 @@
             // 如果当前节点就是目标节点
             console.log("disabled", node);
             // 将目标id放入结果集ids中
-            ids.push(id);
+            deleteIds.push(id);
+            deleteNames.push(node.name);
 
             // 遍历所有子节点
             const children = node.children;
@@ -295,12 +298,19 @@
       // Long类型对应的前端类型是number
       const handleDelete = (id: number) => {
         getDeleteIds(level1.value, id);
-        axios.delete("/doc/delete/" + ids.join(",")).then((response) => {
-          // const data中的data就是CommonResp
-          const data = response.data;
-          if(data.success){
-            // 删除成功后重新加载列表
-            handleQuery();
+        Modal.confirm({
+          title: '重要提醒',
+          icon: createVNode(ExclamationCircleOutlined),
+          content: '将删除：【' + deleteNames.join("，") + "】删除后不可恢复，确认删除？",
+          onOk() {
+            // console.log(ids)
+            axios.delete("/doc/delete/" + deleteIds.join(",")).then((response) => {
+              const data = response.data; // data = commonResp
+              if (data.success) {
+                // 重新加载列表
+                handleQuery();
+              }
+            })
           }
         });
       };
