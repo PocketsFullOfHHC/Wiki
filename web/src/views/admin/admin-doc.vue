@@ -190,7 +190,8 @@
       // 因为树选择组件的属性状态，会随当前编辑的节点而变化，所以单独声明一个响应式变量
       const treeSelectData = ref();
       treeSelectData.value = [];
-      const doc = ref({});
+      const doc = ref();
+      doc.value = {};
       const modalVisible = ref(false);
       const modalLoading = ref(false);
       const editor = new E('#content');
@@ -200,6 +201,10 @@
       // 点击保存后的逻辑
       const handleSave = () => {
         modalLoading.value = true;
+
+        // 获取富文本中的内容
+        doc.value.content = editor.txt.html();
+
         // post请求无需像get请求一样传params
         axios.post("/doc/save", doc.value).then((response) => {
           // 只要后端有返回就需要把loading效果去掉

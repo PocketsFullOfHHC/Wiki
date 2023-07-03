@@ -2,8 +2,10 @@ package com.hhc.wiki.service;
 
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import com.hhc.wiki.domain.Content;
 import com.hhc.wiki.domain.Doc;
 import com.hhc.wiki.domain.DocExample;
+import com.hhc.wiki.mapper.ContentMapper;
 import com.hhc.wiki.mapper.DocMapper;
 import com.hhc.wiki.req.DocQueryReq;
 import com.hhc.wiki.req.DocSaveReq;
@@ -33,6 +35,9 @@ public class DocService {
     // @Autowired
     // 将DocMapper声明
     private DocMapper docMapper;
+
+    @Resource
+    private ContentMapper contentMapper;
 
     @Resource
     private SnowFlake snowFlake;
@@ -83,17 +88,27 @@ public class DocService {
      * 保存分类数据
      * */
     public void save(DocSaveReq req){
-        // 对象单体复制
+        // 对象单体复制：只会copy req里面Doc的对应字段
         Doc doc = CopyUtil.copy(req, Doc.class);
+        Content content = CopyUtil.copy(req, Content.class);
         if(ObjectUtils.isEmpty(doc.getId())){
             // 没有id值说明是新增保存
             // 生成id并赋值
             doc.setId(snowFlake.nextId());
             docMapper.insert(doc);
+
+            content.setId(doc.getId());
+            contentMapper.insert(content);
         }else{
             // 点击编辑的保存已有数据后的编辑保存，不是新增保存
             // 根据主键id来更新：点击该方法查看发现传入的参数为doc类型
             docMapper.updateByPrimaryKey(doc);
+            // blob代表富文本：包含大字段的更新，而updateByPrimaryKey只包含小字段的更新
+            // 如果content表一开始什么内容都没有就无法根据id查询去添加content，因此此时需要用insert
+            int count = contentMapper.updateByPrimaryKeyWithBLOBs(content);
+            if(count == 0){
+                contentMapper.insert(content);
+            }
         }
     }
     /**
