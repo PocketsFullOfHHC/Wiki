@@ -137,6 +137,10 @@ public class DocService {
     public String findContent(Long id){
         Content content = contentMapper.selectByPrimaryKey(id);
         // 注意使用getter时一定要判空，如果出现内容为空，则会空指针异常
-        return content.getContent();
+        if (ObjectUtils.isEmpty(content)) {
+            return "";
+        } else {
+            return content.getContent();
+        }
     }
 }
