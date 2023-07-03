@@ -198,7 +198,9 @@
 
       // -------- 表单 ---------
       const doc = ref();
-      doc.value = {};
+      doc.value = {
+        ebookId: route.query.ebookId
+      };
       const editor = new E('#content');
       // 防止下拉框被富文本框遮住
       editor.config.zIndex = 0;
