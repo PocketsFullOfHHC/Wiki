@@ -34,12 +34,11 @@ public class DocController {
         return resp;
     }
 
-    @GetMapping("/all")
-    // @Valid开启校验规则
-    public CommonResp all() {
+    @GetMapping("/all/{ebookId}")
+    public CommonResp all(@PathVariable Long ebookId) {
         // 创建一个返回值通用类的对象，因为查询表返回的是List<Doc>
         CommonResp<List<DocQueryResp>> resp = new CommonResp<>();
-        List<DocQueryResp> list = docService.all();
+        List<DocQueryResp> list = docService.all(ebookId);
         // success默认为true，message为null，因此都无需设置
         resp.setContent(list);
         return resp;

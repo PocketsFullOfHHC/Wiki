@@ -75,8 +75,10 @@ public class DocService {
     /**
      * 查询全部
      * */
-    public List<DocQueryResp> all(){
+    public List<DocQueryResp> all(Long ebookId){
         DocExample docExample = new DocExample();
+        // 添加条件：不能再用动态查询了，电子书的id对不上就不会返回任何结果
+        docExample.createCriteria().andEbookIdEqualTo(ebookId);
         // 按sort字段的升序排序
         docExample.setOrderByClause("sort asc");
         List<Doc> docList = docMapper.selectByExample(docExample);
