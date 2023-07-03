@@ -97,13 +97,6 @@
 
     </a-layout-content>
   </a-layout>
-<!--  <a-modal-->
-<!--          title="文档表单"-->
-<!--          v-model:visible="modalVisible"-->
-<!--          :confirm-loading="modalLoading"-->
-<!--          @ok="handleModalOk"-->
-<!--  >-->
-<!--  </a-modal>-->
 </template>
 <script lang="ts">
   import { defineComponent, onMounted, ref, createVNode } from 'vue';
@@ -192,27 +185,22 @@
       treeSelectData.value = [];
       const doc = ref();
       doc.value = {};
-      const modalVisible = ref(false);
-      const modalLoading = ref(false);
       const editor = new E('#content');
       // 防止下拉框被富文本框遮住
       editor.config.zIndex = 0;
 
       // 点击保存后的逻辑
       const handleSave = () => {
-        modalLoading.value = true;
 
         // 获取富文本中的内容
         doc.value.content = editor.txt.html();
 
         // post请求无需像get请求一样传params
         axios.post("/doc/save", doc.value).then((response) => {
-          // 只要后端有返回就需要把loading效果去掉
-          modalLoading.value = false;
           // const data中的data就是CommonResp
           const data = response.data;
           if(data.success){
-            modalVisible.value = false;
+            message.success("保存成功！");
             // 编辑后重新加载列表
             handleQuery();
           } else{
@@ -287,11 +275,28 @@
       };
 
       /**
+       * 文档内容查询
+       **/
+      const handleQueryContent = () => {
+        axios.get("/doc/find-content/" + doc.value.id).then((response) => {
+          const data = response.data;
+          if(data.success){
+            editor.txt.html(data.content);
+          } else{
+            message.error(data.message);
+          }
+        });
+      };
+
+      /**
        * 编辑
        */
       const edit = (record: any) => {
-        modalVisible.value = true;
+        // 清空富文本框，否则点击别处的编辑仍然会显示前面的文档内容
+        editor.txt.html("");
+
         doc.value = Tool.copy(record);
+        handleQueryContent();
         // 复制level1的数据到树形下拉框的数据中
         treeSelectData.value = Tool.copy(level1.value);
         // 不能选择当前节点及其所有子孙节点，作为父节点，会使树断开
@@ -305,7 +310,8 @@
        * 新增
        */
       const add = () => {
-        modalVisible.value = true;
+        // 清空富文本框
+        editor.txt.html("");
         // 新增时的表单项应该是空的，这里清空
         doc.value = {
           ebookId: route.query.ebookId
@@ -361,8 +367,6 @@
         add,
 
         doc,
-        modalVisible,
-        modalLoading,
         handleSave,
 
         handleDelete,

@@ -65,4 +65,13 @@ public class DocController {
         docService.delete(list);
         return resp;
     }
+
+    @GetMapping("/find-content/{id}")
+    // {id}是restful编码风格传入删除内容的id的方法，加上{}是因为id是变化的。@PathVariable注解可以接收到路径传入的id参数
+    public CommonResp findContent(@PathVariable Long id) {
+        CommonResp<String> resp = new CommonResp<>();
+        String content = docService.findContent(id);
+        resp.setContent(content);
+        return resp;
+    }
 }
