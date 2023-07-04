@@ -4,6 +4,8 @@ import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.hhc.wiki.domain.User;
 import com.hhc.wiki.domain.UserExample;
+import com.hhc.wiki.exception.BusinessException;
+import com.hhc.wiki.exception.BusinessExceptionCode;
 import com.hhc.wiki.mapper.UserMapper;
 import com.hhc.wiki.req.UserQueryReq;
 import com.hhc.wiki.req.UserSaveReq;
@@ -14,6 +16,7 @@ import com.hhc.wiki.util.SnowFlake;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
 
 import javax.annotation.Resource;
@@ -63,10 +66,16 @@ public class UserService {
         // 对象单体复制
         User user = CopyUtil.copy(req, User.class);
         if(ObjectUtils.isEmpty(user.getId())){
-            // 没有id值说明是新增保存
-            // 生成id并赋值
-            user.setId(snowFlake.nextId());
-            userMapper.insert(user);
+            User userDB = selectByLoginName(req.getLoginName());
+            // 判断登录名是否重复
+            if (ObjectUtils.isEmpty(userDB)) {
+                // 新增
+                user.setId(snowFlake.nextId());
+                userMapper.insert(user);
+            } else {
+                // 用户名已存在
+                throw new BusinessException(BusinessExceptionCode.USER_LOGIN_NAME_EXIST);
+            }
         }else{
             // 点击编辑的保存已有数据后的编辑保存，不是新增保存
             // 根据主键id来更新：点击该方法查看发现传入的参数为user类型
@@ -78,5 +87,19 @@ public class UserService {
     * */
     public void delete(Long id){
         userMapper.deleteByPrimaryKey(id);
+    }
+
+    public User selectByLoginName(String LoginName) {
+        UserExample userExample = new UserExample();
+        UserExample.Criteria criteria = userExample.createCriteria();
+        criteria.andLoginNameEqualTo(LoginName);
+        // 虽然用户名唯一，最多只能查到一条，但mybatis只能用list接收查询数据
+        List<User> userList = userMapper.selectByExample(userExample);
+        if (CollectionUtils.isEmpty(userList)) {
+            return null;
+        } else {
+            // 返回list数据的第一条
+            return userList.get(0);
+        }
     }
 }
