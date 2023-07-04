@@ -8,6 +8,7 @@ import com.hhc.wiki.exception.BusinessException;
 import com.hhc.wiki.exception.BusinessExceptionCode;
 import com.hhc.wiki.mapper.UserMapper;
 import com.hhc.wiki.req.UserQueryReq;
+import com.hhc.wiki.req.UserResetPasswordReq;
 import com.hhc.wiki.req.UserSaveReq;
 import com.hhc.wiki.resp.PageResp;
 import com.hhc.wiki.resp.UserQueryResp;
@@ -104,5 +105,13 @@ public class UserService {
             // 返回list数据的第一条
             return userList.get(0);
         }
+    }
+
+    /**
+     * 重置用户密码
+     * */
+    public void resetPassword(UserResetPasswordReq req){
+        User user = CopyUtil.copy(req, User.class);
+        userMapper.updateByPrimaryKeySelective(user);
     }
 }
