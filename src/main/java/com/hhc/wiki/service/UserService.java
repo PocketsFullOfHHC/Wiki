@@ -79,6 +79,8 @@ public class UserService {
         }else{
             // 更新：防止更新后改变用户名
             user.setLoginName(null);
+            // 防止修改密码
+            user.setPassword(null);
             // 改成Selective表示user有值才去更新，否则不会去更新
             userMapper.updateByPrimaryKeySelective(user);
         }
