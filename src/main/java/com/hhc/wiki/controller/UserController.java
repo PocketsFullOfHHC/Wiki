@@ -6,6 +6,7 @@ import com.hhc.wiki.resp.CommonResp;
 import com.hhc.wiki.resp.PageResp;
 import com.hhc.wiki.resp.UserQueryResp;
 import com.hhc.wiki.service.UserService;
+import org.springframework.util.DigestUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -35,6 +36,8 @@ public class UserController {
     // 编辑时传入的参数和查询时传入的参数要有所区别：编辑需要传入的参数应该和电子书实体类一样的
     // @RequestBody注解对应的是json方式的POST提交，这样后端才能用json接收到
     public CommonResp save(@Valid @RequestBody UserSaveReq req) {
+        // 密码加密：变成十六进制的密码
+        req.setPassword(DigestUtils.md5DigestAsHex(req.getPassword().getBytes()));
         // 创建一个返回值通用类的对象，因为查询表返回的是List<User>
         CommonResp resp = new CommonResp<>();
         userService.save(req);
