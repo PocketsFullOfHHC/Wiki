@@ -67,7 +67,7 @@ public class UserService {
         User user = CopyUtil.copy(req, User.class);
         if(ObjectUtils.isEmpty(user.getId())){
             User userDB = selectByLoginName(req.getLoginName());
-            // 判断登录名是否重复
+            // 判断用户名是否重复
             if (ObjectUtils.isEmpty(userDB)) {
                 // 新增
                 user.setId(snowFlake.nextId());
@@ -77,9 +77,10 @@ public class UserService {
                 throw new BusinessException(BusinessExceptionCode.USER_LOGIN_NAME_EXIST);
             }
         }else{
-            // 点击编辑的保存已有数据后的编辑保存，不是新增保存
-            // 根据主键id来更新：点击该方法查看发现传入的参数为user类型
-            userMapper.updateByPrimaryKey(user);
+            // 更新：防止更新后改变用户名
+            user.setLoginName(null);
+            // 改成Selective表示user有值才去更新，否则不会去更新
+            userMapper.updateByPrimaryKeySelective(user);
         }
     }
     /**
