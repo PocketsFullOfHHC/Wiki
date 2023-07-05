@@ -8,6 +8,7 @@ import 'ant-design-vue/dist/reset.css';
 import * as Icons from '@ant-design/icons-vue';
 // 全局配置axios请求域(域：即请求地址的前半段：http://127.0.0.1:8880)
 import axios from 'axios';
+import {Tool} from "@/util/tool";
 axios.defaults.baseURL = process.env.VUE_APP_SERVER;
 
 /**
@@ -16,6 +17,12 @@ axios.defaults.baseURL = process.env.VUE_APP_SERVER;
 // 请求拦截器
 axios.interceptors.request.use(function (config) {
   console.log('请求参数：', config);
+  // 向请求头header中添加token方便后端做校验来判断是否需要拦截
+  const token = store.state.user.token;
+  if (Tool.isNotEmpty(token)) {
+    config.headers.token = token;
+    console.log("请求headers增加token:", token);
+  }
   return config;
 }, error => {
   return Promise.reject(error);

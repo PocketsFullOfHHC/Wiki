@@ -92,7 +92,7 @@ public class UserController {
         userLoginResp.setToken(token.toString());
         // 向redis数据库中放token，参数为key：上面雪花算法生成的token，值为userLoginResp，时效为24小时，时间的单位
         // 向redis中放入类，那么这个类一定要序列化：一般转化为json字符串即可
-        redisTemplate.opsForValue().set(token, JSONObject.toJSONString(userLoginResp), 3600 * 24, TimeUnit.SECONDS);
+        redisTemplate.opsForValue().set(token.toString(), JSONObject.toJSONString(userLoginResp), 3600 * 24, TimeUnit.SECONDS);
 
         resp.setContent(userLoginResp);
         return resp;

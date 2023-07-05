@@ -1,6 +1,6 @@
-//// 配置需要拦截器的接口请求
-//package com.hhc.wiki.config;
-//
+// 配置需要拦截器的接口请求
+package com.hhc.wiki.config;
+
 //// 引入拦截器
 //import com.hhc.wiki.interceptor.LogInterceptor;
 //import org.springframework.context.annotation.Configuration;
@@ -22,3 +22,32 @@
 //                .addPathPatterns("/**").excludePathPatterns("/login");
 //    }
 //}
+
+import com.hhc.wiki.interceptor.LoginInterceptor;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+
+import javax.annotation.Resource;
+
+@Configuration
+public class SpringMvcConfig implements WebMvcConfigurer {
+
+    @Resource
+    LoginInterceptor loginInterceptor;
+
+    public void addInterceptors(InterceptorRegistry registry) {
+        // 配置无需拦截的页面路径，这是拦截器的优势，两个星号表示后面的值是任意的
+        registry.addInterceptor(loginInterceptor)
+                .addPathPatterns("/**")
+                .excludePathPatterns(
+                        "/test/**",
+                        "/redis/**",
+                        "/user/login",
+                        "/category/all",
+                        "/ebook/list",
+                        "/doc/all/**",
+                        "/doc/find-content/**"
+                );
+    }
+}
