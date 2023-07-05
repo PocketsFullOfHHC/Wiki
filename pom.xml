@@ -53,6 +53,12 @@
             <artifactId>spring-boot-starter-aop</artifactId>
         </dependency>
 
+        <!--整合redis-->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-redis</artifactId>
+        </dependency>
+
         <!-- 引入Validation参数校验的相关依赖：为SpringBoot内置，因此不用指定版本号 -->
         <dependency>
             <groupId>org.springframework.boot</groupId>

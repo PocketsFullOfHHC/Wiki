@@ -1,5 +1,6 @@
 package com.hhc.wiki.controller;
 
+import com.alibaba.fastjson.JSONObject;
 import com.hhc.wiki.req.UserLoginReq;
 import com.hhc.wiki.req.UserQueryReq;
 import com.hhc.wiki.req.UserResetPasswordReq;
@@ -9,11 +10,16 @@ import com.hhc.wiki.resp.PageResp;
 import com.hhc.wiki.resp.UserLoginResp;
 import com.hhc.wiki.resp.UserQueryResp;
 import com.hhc.wiki.service.UserService;
+import com.hhc.wiki.util.SnowFlake;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.util.DigestUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.validation.Valid;
+import java.util.concurrent.TimeUnit;
 
 // 返回字符串(内容实例)
 @RestController
@@ -21,8 +27,18 @@ import javax.validation.Valid;
 @RequestMapping("/user")
 public class UserController {
 
+    private static final Logger LOG = LoggerFactory.getLogger(UserController.class);
+
     @Resource
     private UserService userService;
+
+    // redis缓存token
+    @Resource
+    private RedisTemplate redisTemplate;
+
+    // 雪花算法生成id
+    @Resource
+    private SnowFlake snowFlake;
 
     @GetMapping("/list")
     // @Valid开启校验规则
@@ -69,6 +85,15 @@ public class UserController {
         req.setPassword(DigestUtils.md5DigestAsHex(req.getPassword().getBytes()));
         CommonResp<UserLoginResp> resp = new CommonResp<>();
         UserLoginResp userLoginResp = userService.login(req);
+
+        // 用雪花算法生成token
+        Long token = snowFlake.nextId();
+        LOG.info("生成单点登录token：{}，并放入redis中", token);
+        userLoginResp.setToken(token.toString());
+        // 向redis数据库中放token，参数为key：上面雪花算法生成的token，值为userLoginResp，时效为24小时，时间的单位
+        // 向redis中放入类，那么这个类一定要序列化：一般转化为json字符串即可
+        redisTemplate.opsForValue().set(token, JSONObject.toJSONString(userLoginResp), 3600 * 24, TimeUnit.SECONDS);
+
         resp.setContent(userLoginResp);
         return resp;
     }
