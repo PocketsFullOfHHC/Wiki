@@ -1,7 +1,7 @@
 <!-- 组件取名为the-header，不取名header是为了避免与h5里面的header标签冲突 -->
 <template>
     <a-layout-footer style="text-align: center">
-        HHC电子书，欢迎{{user.name}}
+        HHC电子书<span v-show="user.id">，欢迎：{{user.name}}</span>
     </a-layout-footer>
 </template>
 <script lang="ts">

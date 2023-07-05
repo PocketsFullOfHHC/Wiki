@@ -48,7 +48,7 @@
     </a-layout-header>
 </template>
 <script lang="ts">
-    import { defineComponent, ref } from 'vue';
+    import {computed, defineComponent, ref} from 'vue';
     import axios from 'axios';
     import { message } from 'ant-design-vue';
     import store from "@/store";
@@ -61,8 +61,7 @@
         name: 'the-header',
         setup () {
             // 登录后显示user信息
-            const user = ref();
-            user.value = {};
+            const user = computed(() => store.state.user);
 
             // 用来登录
             const loginUser = ref({
@@ -86,9 +85,8 @@
                     if (data.success) {
                         loginModalVisible.value = false;
                         message.success("登录成功！");
-                        user.value = data.content;
-                        // 用commit触发vuex的store中的mutations里面的方法
-                        store.commit("setUser",user.value);
+                        // 用commit触发vuex的store中的mutations里面的方法，给store里面的user赋值
+                        store.commit("setUser", data.content);
                     } else {
                         message.error(data.message);
                     }
