@@ -1,13 +1,15 @@
 package com.hhc.wiki.req;
 
-import javax.validation.constraints.NotNull;
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Pattern;
 
 public class UserLoginReq {
-    @NotNull(message = "【用户名】不能为空")
+
+    // NotEmpty不光检验null，还检验空字符串(场景：在input框中输入一些字符串后再清空，此时不是null，而是空字符串)
+    @NotEmpty(message = "【用户名】不能为空")
     private String loginName;
 
-    @NotNull(message = "【密码】不能为空")
+    @NotEmpty(message = "【密码】不能为空")
     // 长度校验
     // @Length(min = 6, max = 20, message = "【密码】6~20位")
     // 正则表达式校验
