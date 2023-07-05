@@ -97,4 +97,14 @@ public class UserController {
         resp.setContent(userLoginResp);
         return resp;
     }
+
+    @GetMapping("/logout/{token}")
+    // {id}是restful编码风格传入删除内容的id的方法，加上{}是因为id是变化的。@PathVariable注解可以接收到路径传入的id参数
+    public CommonResp logout(@PathVariable String token) {
+        CommonResp resp = new CommonResp<>();
+        // 在redis中清空token
+        redisTemplate.delete(token);
+        LOG.info("从redis中删除token: {}", token);
+        return resp;
+    }
 }
