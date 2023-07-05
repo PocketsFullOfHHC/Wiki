@@ -6,6 +6,8 @@ import AdminCategory from '../views/admin/admin-category.vue'
 import AdminDoc from '../views/admin/admin-doc.vue'
 import AdminUser from '../views/admin/admin-user.vue'
 import Doc from '../views/doc.vue'
+import store from "@/store";
+import {Tool} from "@/util/tool";
 
 const routes: Array<RouteRecordRaw> = [
   {
@@ -21,22 +23,34 @@ const routes: Array<RouteRecordRaw> = [
   {
     path: '/admin/user',
     name: 'User',
-    component: AdminUser
+    component: AdminUser,
+    meta: {
+      loginRequire: true
+    }
   },
   {
     path: '/admin/ebook',
     name: 'AdminEbook',
-    component: AdminEbook
+    component: AdminEbook,
+    meta: {
+      loginRequire: true
+    }
   },
   {
     path: '/admin/category',
     name: 'AdminCategory',
-    component: AdminCategory
+    component: AdminCategory,
+    meta: {
+      loginRequire: true
+    }
   },
   {
     path: '/admin/doc',
     name: 'AdminDoc',
-    component: AdminDoc
+    component: AdminDoc,
+    meta: {
+      loginRequire: true
+    }
   },
   {
     path: '/doc',
@@ -49,5 +63,26 @@ const router = createRouter({
   history: createWebHistory(process.env.BASE_URL),
   routes
 })
+
+// 路由登录拦截
+// to是新路由，即想要跳转到的路由，from为旧路由，即当前的路由
+router.beforeEach((to, from, next) => {
+  // 要不要对meta.loginRequire属性做监控拦截
+  // item为想要访问的路由，item.meta.loginRequire返回的是该路由是否需要登录验证
+  if (to.matched.some(function (item) {
+    console.log(item, "是否需要登录校验：", item.meta.loginRequire);
+    return item.meta.loginRequire
+  })) {
+    const loginUser = store.state.user;
+    if (Tool.isEmpty(loginUser)) {
+      console.log("用户未登录！");
+      next('/');
+    } else {
+      next();
+    }
+  } else {
+    next();
+  }
+});
 
 export default router
