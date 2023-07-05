@@ -7,10 +7,12 @@ import com.hhc.wiki.domain.UserExample;
 import com.hhc.wiki.exception.BusinessException;
 import com.hhc.wiki.exception.BusinessExceptionCode;
 import com.hhc.wiki.mapper.UserMapper;
+import com.hhc.wiki.req.UserLoginReq;
 import com.hhc.wiki.req.UserQueryReq;
 import com.hhc.wiki.req.UserResetPasswordReq;
 import com.hhc.wiki.req.UserSaveReq;
 import com.hhc.wiki.resp.PageResp;
+import com.hhc.wiki.resp.UserLoginResp;
 import com.hhc.wiki.resp.UserQueryResp;
 import com.hhc.wiki.util.CopyUtil;
 import com.hhc.wiki.util.SnowFlake;
@@ -113,5 +115,29 @@ public class UserService {
     public void resetPassword(UserResetPasswordReq req){
         User user = CopyUtil.copy(req, User.class);
         userMapper.updateByPrimaryKeySelective(user);
+    }
+
+    /**
+     * 登录：先查出登录名后将整条信息返回，再比对密码
+     * */
+    public UserLoginResp login(UserLoginReq req){
+        User userDB = selectByLoginName(req.getLoginName());
+        if(ObjectUtils.isEmpty(userDB)){
+            // 用户名不存在
+            // 打印日志
+            LOG.info("用户名不存在，{}", req.getLoginName());
+            // 给出模糊提醒
+            throw new BusinessException(BusinessExceptionCode.LOGIN_USER_ERROR);
+        } else {
+            if(userDB.getPassword().equals(req.getPassword())){
+                // 登录成功
+                UserLoginResp userLoginResp = CopyUtil.copy(userDB, UserLoginResp.class);
+                return userLoginResp;
+            } else {
+                // 密码错误
+                LOG.info("密码不对，输入密码：{}，数据库密码：{}", req.getPassword(), userDB.getPassword());
+                throw new BusinessException(BusinessExceptionCode.LOGIN_USER_ERROR);
+            }
+        }
     }
 }
