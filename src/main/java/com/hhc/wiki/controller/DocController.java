@@ -55,7 +55,6 @@ public class DocController {
     }
 
     @DeleteMapping("/delete/{idsStr}")
-    // {id}是restful编码风格传入删除内容的id的方法，加上{}是因为id是变化的。@PathVariable注解可以接收到路径传入的id参数
     public CommonResp delete(@PathVariable String idsStr) {
         // 创建一个返回值通用类的对象，因为查询表返回的是List<Doc>
         CommonResp resp = new CommonResp<>();
@@ -71,6 +70,13 @@ public class DocController {
         CommonResp<String> resp = new CommonResp<>();
         String content = docService.findContent(id);
         resp.setContent(content);
+        return resp;
+    }
+
+    @GetMapping("/vote/{id}")
+    public CommonResp vote(@PathVariable Long id) {
+        CommonResp<String> resp = new CommonResp<>();
+        docService.vote(id);
         return resp;
     }
 }
