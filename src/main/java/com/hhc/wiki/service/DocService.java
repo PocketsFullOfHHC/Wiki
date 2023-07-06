@@ -5,6 +5,8 @@ import com.github.pagehelper.PageInfo;
 import com.hhc.wiki.domain.Content;
 import com.hhc.wiki.domain.Doc;
 import com.hhc.wiki.domain.DocExample;
+import com.hhc.wiki.exception.BusinessException;
+import com.hhc.wiki.exception.BusinessExceptionCode;
 import com.hhc.wiki.mapper.ContentMapper;
 import com.hhc.wiki.mapper.DocMapper;
 import com.hhc.wiki.mapper.DocMapperCust;
@@ -13,6 +15,8 @@ import com.hhc.wiki.req.DocSaveReq;
 import com.hhc.wiki.resp.DocQueryResp;
 import com.hhc.wiki.resp.PageResp;
 import com.hhc.wiki.util.CopyUtil;
+import com.hhc.wiki.util.RedisUtil;
+import com.hhc.wiki.util.RequestContext;
 import com.hhc.wiki.util.SnowFlake;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -45,6 +49,9 @@ public class DocService {
 
     @Resource
     private DocMapperCust docMapperCust;
+
+    @Resource
+    private RedisUtil redisUtil;
 
     /**
      * 分页查询
@@ -157,6 +164,12 @@ public class DocService {
      *  点赞
      * */
     public void vote(Long id){
-        docMapperCust.increaseVoteCount(id);
+        // 远程IP+doc.id作为key，24小时内不能重复
+        String ip = RequestContext.getRemoteAddr();
+        if (redisUtil.validateRepeat("DOC_VOTE_" + id + "_" + ip, 3600 * 24)) {
+            docMapperCust.increaseVoteCount(id);
+        } else {
+            throw new BusinessException(BusinessExceptionCode.VOTE_REPEAT);
+        }
     }
 }
