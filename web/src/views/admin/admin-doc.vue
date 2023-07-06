@@ -187,7 +187,8 @@
             console.log("树形结构：", level1);
 
             // 父文档下拉框初始化，相当于点击新增
-            treeSelectData.value = Tool.copy(level1.value);
+            // 解决：TypeError: Cannot read properties of undefined (reading 'unshift')
+            treeSelectData.value = Tool.copy(level1.value) || [];
             // 为选择树添加一个"无"
             treeSelectData.value.unshift({id: 0, name: '无'});
           } else{
@@ -198,6 +199,7 @@
 
       // -------- 表单 ---------
       const doc = ref();
+      doc.value = {};
       doc.value = {
         ebookId: route.query.ebookId
       };
@@ -314,7 +316,7 @@
         doc.value = Tool.copy(record);
         handleQueryContent();
         // 复制level1的数据到树形下拉框的数据中
-        treeSelectData.value = Tool.copy(level1.value);
+        treeSelectData.value = Tool.copy(level1.value) || [];
         // 不能选择当前节点及其所有子孙节点，作为父节点，会使树断开
         setDisable(treeSelectData.value, record.id);
 
@@ -333,7 +335,7 @@
           ebookId: route.query.ebookId
         };
 
-        treeSelectData.value = Tool.copy(level1.value);
+        treeSelectData.value = Tool.copy(level1.value) || [];
 
         // 为选择树添加一个"无"
         treeSelectData.value.unshift({id: 0, name: '无'});

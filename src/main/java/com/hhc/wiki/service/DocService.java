@@ -7,6 +7,7 @@ import com.hhc.wiki.domain.Doc;
 import com.hhc.wiki.domain.DocExample;
 import com.hhc.wiki.mapper.ContentMapper;
 import com.hhc.wiki.mapper.DocMapper;
+import com.hhc.wiki.mapper.DocMapperCust;
 import com.hhc.wiki.req.DocQueryReq;
 import com.hhc.wiki.req.DocSaveReq;
 import com.hhc.wiki.resp.DocQueryResp;
@@ -41,6 +42,9 @@ public class DocService {
 
     @Resource
     private SnowFlake snowFlake;
+
+    @Resource
+    private DocMapperCust docMapperCust;
 
     /**
      * 分页查询
@@ -97,6 +101,9 @@ public class DocService {
             // 没有id值说明是新增保存
             // 生成id并赋值
             doc.setId(snowFlake.nextId());
+            // 新增时设置点赞数阅读数均为0，因为insert时不传值不会被数据库default
+            doc.setViewCount(0);
+            doc.setVoteCount(0);
             docMapper.insert(doc);
 
             content.setId(doc.getId());
@@ -136,6 +143,8 @@ public class DocService {
      * */
     public String findContent(Long id){
         Content content = contentMapper.selectByPrimaryKey(id);
+        // 文档阅读数+1
+        docMapperCust.increaseViewCount(id);
         // 注意使用getter时一定要判空，如果出现内容为空，则会空指针异常
         if (ObjectUtils.isEmpty(content)) {
             return "";
