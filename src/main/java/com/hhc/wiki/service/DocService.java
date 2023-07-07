@@ -22,6 +22,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ObjectUtils;
 
 import javax.annotation.Resource;
@@ -104,6 +105,9 @@ public class DocService {
     /**
      * 保存分类数据
      * */
+    // 添加事务注解：一般适用于修改两张表的操作，若出现第一张表修改成功，而第二张表修改失败，会导致后面的逻辑出错，加上事务会保证要么全成功，要么全失败
+    // 事务的注解和异步的注解一样，不能在同一个文件中调用自己的方法
+    @Transactional
     public void save(DocSaveReq req){
         // 对象单体复制：只会copy req里面Doc的对应字段
         Doc doc = CopyUtil.copy(req, Doc.class);
