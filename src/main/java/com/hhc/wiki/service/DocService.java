@@ -18,6 +18,7 @@ import com.hhc.wiki.util.CopyUtil;
 import com.hhc.wiki.util.RedisUtil;
 import com.hhc.wiki.util.RequestContext;
 import com.hhc.wiki.util.SnowFlake;
+import com.hhc.wiki.websocket.WebSocketServer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -52,6 +53,9 @@ public class DocService {
 
     @Resource
     private RedisUtil redisUtil;
+
+    @Resource
+    public WebSocketServer webSocketServer;
 
     /**
      * 分页查询
@@ -171,6 +175,9 @@ public class DocService {
         } else {
             throw new BusinessException(BusinessExceptionCode.VOTE_REPEAT);
         }
+        // 推送消息
+        Doc docDb = docMapper.selectByPrimaryKey(id);
+        webSocketServer.sendInfo("【" + docDb.getName() + "】被点赞！");
     }
 
     public void updateEbookInfo() {
