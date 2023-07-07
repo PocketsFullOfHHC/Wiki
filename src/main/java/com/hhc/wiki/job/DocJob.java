@@ -21,8 +21,10 @@ public class DocJob {
      */
     @Scheduled(cron = "1/5 * * * * ?")
     public void cron() {
-        LOG.info("每30秒更新电子书信息");
+        LOG.info("更新电子书下的文档数据开始");
+        long start = System.currentTimeMillis();
         docService.updateEbookInfo();
+        LOG.info("更新电子书下的文档数据结束，耗时：{}毫秒", System.currentTimeMillis() - start);
     }
 
 }
