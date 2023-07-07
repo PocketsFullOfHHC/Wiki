@@ -65,6 +65,12 @@
             <artifactId>spring-boot-starter-validation</artifactId>
         </dependency>
 
+        <!-- 集成websocket -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-websocket</artifactId>
+        </dependency>
+
         <!-- fastjson：将Java对象转换为JSON格式，当然它也可以将JSON字符串转换为Java对象 -->
         <dependency>
             <groupId>com.alibaba</groupId>
