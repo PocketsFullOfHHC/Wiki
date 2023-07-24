@@ -92,7 +92,7 @@ insert into `doc` (id, ebook_id, parent, name, sort, view_count, vote_count) val
 # mediumtext格式可以用来存储富文本
 -- 文档内容
 drop table if exists `content`;
-create table `content` (ma
+create table `content` (
                            `id` bigint not null comment '文档id',
                            `content` mediumtext not null comment '内容',
                            primary key (`id`)
@@ -110,3 +110,16 @@ create table `user` (
 ) engine=innodb default charset=utf8mb4 comment='用户';
 
 insert into `user` (id, `login_name`, `name`, `password`) values (1, 'test', '测试', 'e70e2222a9d67c4f2eae107533359aa4');
+
+-- 电子书快照表
+drop table if exists `ebook_snapshot`;
+create table `ebook_snapshot` (
+                                  `id` bigint auto_increment not null comment 'id',
+                                  `ebook_id` bigint not null default 0 comment '电子书id',
+                                  `date` date not null comment '快照日期',
+                                  `view_count` int not null default 0 comment '阅读数',
+                                  `vote_count` int not null default 0 comment '点赞数',
+                                  `view_increase` int not null default 0 comment '阅读增长',
+                                  `vote_increase` int not null default 0 comment '点赞增长',
+                                  primary key (`id`)
+) engine=innodb default charset=utf8mb4 comment='电子书快照表';
