@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hhc.wiki.mapper.EbookSnapshotMapperCust" >
+<!--
+# 方案(生成id连续的快照表)：
+# 1.如果快照表里还没有，则为所有的电子书生成一条今天的快照记录：ebook表里面的id值已经在ebook_snapshot表中有值了，则不需要将其查出来
+# 2.更新阅读总数，点赞总数
+# 3.更新今日阅读数，今日点赞数
+# 若字段是关键字，则需要添加反引号
+# 不存在的写法：select 1后面where一个条件，若条件满足，则会查到1
+# left join表示更新左边的ebook_snapshot表，不管右边的表是否存在，如果有根据下面的条件更新，如果没有就把t2.view_count和t2.vote_count变成0
+# left join与on匹配起来，用来将两张表关联起来
+-->
+
+    <update id="genSnapshot">
+        insert into ebook_snapshot(ebook_id, `date`, view_count, vote_count, view_increase, vote_increase)
+        select t1.id, curdate(), 0, 0, 0, 0
+        from ebook t1
+        where not exists(select 1
+                         from ebook_snapshot t2
+                         where t1.id = t2.ebook_id
+                           and t2.`date` = curdate());
+
+        update ebook_snapshot t1, ebook t2
+        set t1.view_count = t2.view_count,
+            t1.vote_count = t2.vote_count
+        where t1.`date` = curdate()
+        and t1.ebook_id = t2.id;
+
+        update ebook_snapshot t1 left join (select ebook_id, view_count, vote_count
+                                            from ebook_snapshot
+                                            where `date` = date_sub(curdate(), interval 1 day)) t2
+            on t1.ebook_id = t2.ebook_id
+        set t1.view_increase = t1.view_count - ifnull(t2.view_count, 0),
+            t1.vote_increase = t1.vote_count - ifnull(t2.vote_count, 0)
+        where `date` = curdate();
+    </update>
+
+</mapper>
