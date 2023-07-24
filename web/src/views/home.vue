@@ -27,7 +27,7 @@
             :style="{ background: '#fff', padding: '24px', margin: 0, minHeight: '280px' }"
     >
       <div class="welcome" v-show="isShowWelcome">
-        <h>欢迎使用HHC知识库</h>
+        <the-welcome></the-welcome>
       </div>
       <!-- :grid = "{gutter: 20, column: 3}"：每行三列，列与列之间间隔为20px -->
       <a-list v-show="!isShowWelcome" item-layout="vertical" size="large" :grid = "{gutter: 20, column: 3}"  :data-source="ebooks">
@@ -68,10 +68,13 @@ import { defineComponent,onMounted,ref} from 'vue';
 import axios from 'axios';
 import { message } from 'ant-design-vue';
 import {Tool} from "@/util/tool";
+import TheWelcome from '@/components/the-welcome.vue';
 
 export default defineComponent({
   name: 'Home',
-
+  components:{
+    TheWelcome,
+  },
   // vue3新增的初始化方法，是这个组件加载完成后初始会去执行的方法
   // vue3将vue2中的data，method，以及mounted等生命周期函数打包成setup
   setup(){
